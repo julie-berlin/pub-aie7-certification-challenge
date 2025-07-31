@@ -1,0 +1,19 @@
+# Application configuration
+api:
+  title: "Federal Ethics Chatbot API"
+  version: "0.1.0"
+  description: "Agentic RAG system for federal ethics compliance guidance"
+  host: "0.0.0.0"
+  port: 8000
+  reload: true
+
+security:
+  cors_origins:
+    - "http://localhost:3000"
+    - "http://127.0.0.1:3000"
+    - "http://localhost:8080"
+
+environment:
+  name: "development"
+  debug: true
+  log_level: "INFO"
