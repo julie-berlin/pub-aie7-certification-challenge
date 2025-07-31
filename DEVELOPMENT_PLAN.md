@@ -1,35 +1,74 @@
 # Federal Ethics Chatbot - Development Plan
 
-## Current Status: POC Complete ✅
+## Current Status: Enhanced Agentic System Complete ✅
 
-The proof-of-concept notebook demonstrates a working agentic RAG system with multi-step reasoning for federal ethics compliance guidance.
+**COMPLETED**:
+- ✅ Basic POC notebook with agentic RAG system  
+- ✅ Enhanced notebook with planning agent and reflection step
+- ✅ Parallel web search optimization (3x speed improvement)
+- ✅ Multi-model approach (GPT-4o + GPT-4o-mini for planning)
+- ✅ User context collection and personalized guidance
+- ✅ Quality assurance through reflection agent with confidence scoring
+
+**READY FOR**: FastAPI backend development and full-stack deployment
 
 ---
 
-## PHASE 1: Core Enhancements 🚀
-*Priority: High | Timeline: 1-2 weeks*
+## PHASE 1: Certification Challenge (4-Day Sprint) 🏃‍♂️
+*Priority: CRITICAL | Timeline: Aug 1-4, 2025*
 
-### User Experience Improvements
-- [ ] **Add user context collection** (industry, seniority level, job title)
-  - Create user profile schema
-  - Integrate context into violation analysis
-  - Customize guidance based on role and industry
+### Core Architecture (COMPLETED ✅)
+- [x] **Enhanced agentic system with planning and reflection**
+  - [x] Planning agent with GPT-4o-mini for research strategy
+  - [x] User context collection (role, agency, seniority)  
+  - [x] Reflection agent with confidence scoring
+  - [x] Parallel web search agents (3x speed improvement)
 
-- [ ] **Add reflection step** for response quality assurance
-  - Implement self-review mechanism
-  - Check for correctness and completeness
-  - Flag uncertain or incomplete responses
+### 🎯 CURRENT TODO LIST - CERTIFICATION SPRINT
+*Updated: July 31, 2025*
 
-### Search Intelligence
-- [ ] **Add planning agent** to formulate targeted web searches
-  - Analyze question to identify key search terms
-  - Generate multiple search strategies
-  - Prioritize government and authoritative sources
+#### **Day 1 (Aug 1): Backend Development**
+- [ ] **Create FastAPI backend from enhanced notebook** 
+  - [ ] Convert parallel agentic workflow to FastAPI service
+  - [ ] Implement request/response schemas with Pydantic
+  - [ ] Add environment configuration and error handling
+  - [ ] Test core chat endpoint with parallel search agents
+
+#### **Day 2 (Aug 2): Frontend & Integration**  
+- [ ] **Build Next.js frontend interface**
+  - [ ] Create chat interface with streaming support
+  - [ ] Add user context form (role, agency, clearance)
+  - [ ] Implement response formatting with confidence scores
+  - [ ] Connect to FastAPI backend
+- [ ] **Docker deployment setup**
+  - [ ] Dockerize both backend and frontend
+  - [ ] Create docker-compose.yaml with Qdrant service
+  - [ ] Test local deployment end-to-end
+
+#### **Day 3 (Aug 3): Evaluation & Testing**
+- [ ] **RAGAS evaluation implementation**
+  - [ ] Create synthetic test dataset (50 scenarios)
+  - [ ] Implement RAGAS metrics (faithfulness, relevance, precision, recall)
+  - [ ] Run baseline evaluation with parallel system
+- [ ] **Advanced retrieval for Task 6**
+  - [ ] Implement semantic reranking or hybrid search
+  - [ ] Compare performance vs baseline system
+  - [ ] Document results in evaluation tables
+
+#### **Day 4 (Aug 4): Final Deliverables**
+- [ ] **Performance comparison and documentation**
+  - [ ] Run final RAGAS evaluation comparing approaches
+  - [ ] Create results tables and analysis
+  - [ ] Document system architecture and decisions
+- [ ] **Demo preparation**  
+  - [ ] Record 5-minute demo video
+  - [ ] Test complete system functionality
+  - [ ] Prepare final GitHub repository
 
 ---
 
 ## PHASE 2: Advanced Retrieval 🔍
-*Priority: Medium | Timeline: 2-3 weeks*
+*Priority: Medium | Timeline: 2-3 weeks (POST-CERTIFICATION)*
 
 ### Document Processing Optimization
 - [ ] **Compare chunking strategies** for PDF processing
@@ -52,8 +91,8 @@ The proof-of-concept notebook demonstrates a working agentic RAG system with mul
 
 ---
 
-## PHASE 3: Evaluation Framework 📊
-*Priority: High | Timeline: 1-2 weeks*
+## PHASE 3: Advanced Evaluation Framework 📊
+*Priority: Medium | Timeline: 1-2 weeks (POST-CERTIFICATION)*
 
 ### Golden Dataset Creation
 - [ ] **Set up golden dataset using RAGAS knowledge graph**
@@ -82,7 +121,7 @@ The proof-of-concept notebook demonstrates a working agentic RAG system with mul
 ---
 
 ## PHASE 4: Production Deployment 🏗️
-*Priority: Medium | Timeline: 3-4 weeks*
+*Priority: Low | Timeline: 3-4 weeks (POST-CERTIFICATION)*
 
 ### Full-Stack Application
 - [ ] **Create FastAPI backend service**
@@ -138,8 +177,9 @@ The proof-of-concept notebook demonstrates a working agentic RAG system with mul
 ## Success Metrics
 
 ### Technical Performance
-- Response time: < 10 seconds for complex queries
-- Accuracy: > 90% on RAGAS evaluation
+- Response time: < 8 seconds for complex queries (achieved with parallel search)
+- Accuracy: > 90% on RAGAS evaluation  
+- Confidence scoring: > 85% average confidence
 - Uptime: > 99.5% availability
 - Scalability: Handle 100+ concurrent users
 
@@ -192,9 +232,20 @@ The proof-of-concept notebook demonstrates a working agentic RAG system with mul
 
 ---
 
-## Next Immediate Actions
+## Next Immediate Actions - CERTIFICATION SPRINT
 
-1. **Start Phase 1**: Begin with user context collection enhancement
-2. **Set up evaluation**: Implement RAGAS framework for baseline metrics
-3. **Plan full-stack**: Design API specifications and frontend mockups
-4. **Expert validation**: Schedule sessions with ethics compliance experts
+### 🚀 TODAY (July 31): 
+- [x] Enhanced notebook with planning + reflection complete
+- [x] Parallel web search optimization implemented
+- [x] Development plan updated with sprint timeline
+
+### 📅 TOMORROW (Aug 1): FastAPI Backend
+1. **Create FastAPI service** from enhanced notebook
+2. **Implement parallel agentic workflow** as API endpoints
+3. **Add proper error handling** and environment configuration
+4. **Test core functionality** with Qdrant integration
+
+### 📅 NEXT STEPS:
+- **Aug 2**: Next.js frontend + Docker deployment  
+- **Aug 3**: RAGAS evaluation + advanced retrieval
+- **Aug 4**: Final demo + documentation

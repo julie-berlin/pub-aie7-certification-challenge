@@ -127,16 +127,18 @@ Why is this the best solution?
 
 **Deliverables**
 
-1. How does the performance compare to your original RAG application?  Test the fine-tuned embedding model using the RAGAS frameworks to quantify any improvements.  Provide results in a table.
+1. How does the performance compare to your original RAG application? Test the fine-tuned embedding model using the RAGAS frameworks to quantify any improvements. Provide results in a table.
 2. Articulate the changes that you expect to make to your app in the second half of the course. How will you improve your application?
 
 
 ## Time Tracking
 
-- July 30 - (4 hours) ideation, repository created, guidelines saved, initial setup, poc notebook
-- July 31 - (4 hours) backend api, frontend, containerization, local run
-- Aug 1 - (4 hours) feature enhancements, synthetic data, chunking tests
-- Aug 2 - (4 hours) refinements, documentation, check against rubric
-- Aug 3 - (4 hours) validation, final fixes
+| Day     | Hours | Activities |
+| ------- | --:-- | ---------- |
+| July 30 | 4     | ideation, repository created, guidelines saved, initial setup, poc notebook |
+| July 31 | 4     | backend api, frontend, containerization, local run |
+| Aug 1   | 4     | feature enhancements, synthetic data, chunking tests |
+| Aug 2   | 4     | refinements, documentation, check against rubric |
+| Aug 3   | 4     | validation, final fixes |
 
-Total time: ~20 hours
+**Total time: ~20 hours**
