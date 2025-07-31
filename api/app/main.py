@@ -1,0 +1,59 @@
+import os
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+
+from .core.settings import settings
+from .routers.chat_router import router as chat_router
+
+# Load environment variables
+load_dotenv(".env.local")
+
+# Set up LangSmith tracing
+if settings.langchain_api_key:
+    os.environ["LANGCHAIN_TRACING_V2"] = str(settings.langchain_tracing).lower()
+    os.environ["LANGCHAIN_PROJECT"] = settings.langchain_project
+    os.environ["LANGCHAIN_API_KEY"] = settings.langchain_api_key
+
+# Create FastAPI application
+app = FastAPI(
+    title=settings.api_title,
+    version=settings.api_version,
+    description=settings.api_description,
+    debug=settings.debug
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
+app.include_router(chat_router)
+
+# Root endpoint
+@app.get("/")
+async def root():
+    """Root endpoint with API information"""
+    return {
+        "message": "Federal Ethics Compliance Chatbot API",
+        "version": settings.api_version,
+        "docs": "/docs",
+        "health": "/api/health"
+    }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    
+    uvicorn.run(
+        "main:app",
+        host=settings.host,
+        port=settings.port,
+        reload=settings.reload,
+        log_level=settings.log_level.lower()
+    )

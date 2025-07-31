@@ -8,7 +8,16 @@ from dotenv import load_dotenv
 class ConfigurationLoader:
     """Load and merge YAML configuration files with environment variables"""
     
-    def __init__(self, config_dir: str = "api/config"):
+    def __init__(self, config_dir: str = None):
+        import os
+        if config_dir is None:
+            # Try different relative paths based on where we're running from
+            if os.path.exists("api/config"):
+                config_dir = "api/config"  # Running from project root
+            elif os.path.exists("config"):
+                config_dir = "config"      # Running from api directory
+            else:
+                config_dir = "../config"   # Running from subdirectory
         self.config_dir = Path(config_dir)
         self.configs: Dict[str, Any] = {}
         load_dotenv(".env.local")
