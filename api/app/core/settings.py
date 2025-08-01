@@ -64,7 +64,6 @@ class AppSettings:
         self.parallel_search_enabled = workflow_config["parallel_search"]["enabled"]
         self.concurrent_searches = workflow_config["parallel_search"]["concurrent_searches"]
         self.planning_timeout = workflow_config["planning_agent"]["timeout_seconds"]
-        self.reflection_timeout = workflow_config["reflection_agent"]["timeout_seconds"]
 
 
 # Global settings instance

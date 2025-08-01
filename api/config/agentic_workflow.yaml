@@ -5,12 +5,6 @@ planning_agent:
   max_tokens: 1000
   timeout_seconds: 30
 
-reflection_agent:
-  model: "gpt-4o"
-  temperature: 0.1
-  max_tokens: 1500
-  confidence_threshold: 75.0
-  timeout_seconds: 45
 
 parallel_search:
   enabled: true

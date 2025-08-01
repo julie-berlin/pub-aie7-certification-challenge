@@ -33,8 +33,6 @@ class ChatRequest(BaseModel):
     """Request model for ethics chat consultation"""
     question: str = Field(..., description="Ethics question or scenario")
     user_context: Optional[UserContext] = Field(None, description="User context for personalized guidance")
-    include_reflection: bool = Field(True, description="Include quality reflection in response")
-    include_confidence: bool = Field(True, description="Include confidence scoring")
 
 
 class SearchResult(BaseModel):
@@ -63,9 +61,6 @@ class ChatResponse(BaseModel):
     # Optional structured assessment
     assessment: Optional[EthicsAssessment] = None
     
-    # Quality metrics
-    confidence_score: Optional[float] = Field(None, ge=0, le=100, description="Response confidence 0-100")
-    reflection: Optional[str] = Field(None, description="Quality assurance reflection")
     
     # Source information
     federal_law_sources: int = Field(0, description="Number of federal law chunks used")

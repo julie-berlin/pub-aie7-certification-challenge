@@ -28,9 +28,6 @@ class ParallelEthicsState(TypedDict):
     assessment: str
     response: str
     
-    # Quality assurance
-    reflection: Optional[str]
-    confidence_score: Optional[float]
     
     # Metadata
     processing_start_time: Optional[float]
