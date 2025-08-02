@@ -34,7 +34,6 @@
 7. **Severity Assessment** - Minor/moderate/serious classification
 8. **Penalty Research** - Criminal, civil, administrative consequences
 9. **Final Guidance** - Actionable steps and reporting requirements
-10. **Reflection** - Response correctness and completeness review
 
 ## Key Features
 - Multi-source knowledge synthesis (federal law + web)
@@ -42,7 +41,6 @@
 - Step-by-step ethical reasoning with citations
 - Specific penalty and consequence information
 - Actionable corrective guidance
-- Quality assurance through reflection
 
 ## Development Commands
 

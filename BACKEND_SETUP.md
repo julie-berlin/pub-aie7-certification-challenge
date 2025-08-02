@@ -9,7 +9,6 @@
 **Modular Service Design** (no global instances):
 - `PlanningAgentService` - Research strategy with GPT-4o-mini
 - `EthicsAssessmentService` - Comprehensive analysis with GPT-4o  
-- `ReflectionAgentService` - Quality assurance + confidence scoring
 - `DocumentLoaderService` - PDF loading with tiktoken chunking
 - `VectorStoreService` - Qdrant vector database operations
 - `WebSearchService` - Parallel Tavily web searches
@@ -26,7 +25,7 @@ collect_context → create_plan → retrieve_knowledge
                                         ↓
         🔥 PARALLEL: search_general | search_penalties | search_guidance
                                         ↓
-        combine_results → assess_violation → reflect
+        combine_results → assess_violation → finalize
 ```
 
 ### 📁 Project Structure
@@ -49,7 +48,6 @@ api/
 │   ├── services/             # Business logic services
 │   │   ├── planning_agent_service.py
 │   │   ├── ethics_assessment_service.py
-│   │   ├── reflection_agent_service.py
 │   │   ├── document_loader_service.py
 │   │   ├── vector_store_service.py
 │   │   ├── web_search_service.py
@@ -80,8 +78,6 @@ api/
     "seniority": "GS-14",
     "clearance": "secret"
   },
-  "include_reflection": true,
-  "include_confidence": true
 }
 ```
 
@@ -90,8 +86,6 @@ api/
 {
   "question": "Original question",
   "response": "Comprehensive ethics guidance",
-  "confidence_score": 85.0,
-  "reflection": "Quality assurance analysis",
   "federal_law_sources": 5,
   "web_sources": 9,
   "search_results": [...],
@@ -109,7 +103,7 @@ api/
 
 **Multi-Model Approach**:
 - GPT-4o-mini for planning (cost-effective, fast)
-- GPT-4o for assessment and reflection (high quality)
+- GPT-4o for assessment (high quality)
 
 **Smart Configuration**:
 - Path-aware config loading (works from any directory)
