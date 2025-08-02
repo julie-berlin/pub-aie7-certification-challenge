@@ -2,7 +2,9 @@
 
 import { ChatMessage as ChatMessageType } from '@/types'
 import { cn, formatTimestamp } from '@/lib/utils'
-import { User, Bot } from 'lucide-react'
+import { User, Bot, Download } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 interface ChatMessageProps {
   message: ChatMessageType
@@ -11,6 +13,18 @@ interface ChatMessageProps {
 
 export default function ChatMessage({ message, className }: ChatMessageProps) {
   const isUser = message.role === 'user'
+
+  const downloadMarkdown = () => {
+    const blob = new Blob([message.content], { type: 'text/markdown' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `ethics-guidance-${new Date().toISOString().split('T')[0]}.md`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
 
   return (
     <div className={cn('flex gap-3 mb-4', isUser ? 'justify-end' : 'justify-start', className)}>
@@ -22,34 +36,39 @@ export default function ChatMessage({ message, className }: ChatMessageProps) {
       
       <div className={cn('flex flex-col', isUser ? 'items-end' : 'items-start')}>
         <div className={cn(
-          'chat-bubble',
+          'chat-bubble relative group',
           isUser ? 'chat-bubble-user' : 'chat-bubble-assistant'
         )}>
+          {!isUser && (
+            <button
+              onClick={downloadMarkdown}
+              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"
+              title="Download as Markdown"
+            >
+              <Download className="w-4 h-4" />
+            </button>
+          )}
+          
           <div className="prose prose-sm max-w-none">
-            {message.content.split('\n').map((line, index) => {
-              if (line.startsWith('**') && line.endsWith('**')) {
-                return (
-                  <h4 key={index} className="font-semibold text-sm mb-1 mt-2">
-                    {line.slice(2, -2)}
-                  </h4>
-                )
-              }
-              if (line.startsWith('- ')) {
-                return (
-                  <li key={index} className="text-sm ml-4">
-                    {line.slice(2)}
-                  </li>
-                )
-              }
-              if (line.trim() === '') {
-                return <br key={index} />
-              }
-              return (
-                <p key={index} className="text-sm mb-1">
-                  {line}
-                </p>
-              )
-            })}
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                h1: (props) => <h1 className="text-lg font-bold mb-2 mt-3" {...props} />,
+                h2: (props) => <h2 className="text-base font-bold mb-2 mt-3" {...props} />,
+                h3: (props) => <h3 className="text-sm font-bold mb-1 mt-2" {...props} />,
+                h4: (props) => <h4 className="text-sm font-semibold mb-1 mt-2" {...props} />,
+                p: (props) => <p className="text-sm mb-2" {...props} />,
+                ul: (props) => <ul className="list-disc ml-4 mb-2 space-y-1" {...props} />,
+                ol: (props) => <ol className="list-decimal ml-4 mb-2 space-y-1" {...props} />,
+                li: (props) => <li className="text-sm" {...props} />,
+                strong: (props) => <strong className="font-semibold" {...props} />,
+                em: (props) => <em className="italic" {...props} />,
+                code: (props) => <code className="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono" {...props} />,
+                blockquote: (props) => <blockquote className="border-l-4 border-gray-300 pl-3 italic text-gray-600" {...props} />,
+              }}
+            >
+              {message.content}
+            </ReactMarkdown>
           </div>
         </div>
         
