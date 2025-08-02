@@ -208,3 +208,6 @@ __marimo__/
 
 # custom
 .DS_Store
+
+node_modules/
+.next/

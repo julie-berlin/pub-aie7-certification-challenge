@@ -1,0 +1,15 @@
+# Vector database configuration
+qdrant:
+  url: "http://localhost:6333"
+  collection_name: "ethics_knowledge_index"
+  embedding_dimension: 1536
+  distance_metric: "cosine"
+
+retrieval:
+  top_k: 5
+  score_threshold: 0.7
+  rerank_enabled: false
+
+indexing:
+  batch_size: 100
+  parallel_workers: 4
