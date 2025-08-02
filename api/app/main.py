@@ -4,8 +4,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from .core.settings import settings
+from .core.logging_config import configure_logging, get_logger
 from .routers.chat_router import router as chat_router
 from .routers.document_router import router as document_router
+
+# Configure logging first
+configure_logging()
+logger = get_logger("app.main")
 
 # Load environment variables
 load_dotenv(".env.local")
@@ -17,6 +22,12 @@ if settings.langchain_api_key:
     os.environ["LANGCHAIN_API_KEY"] = settings.langchain_api_key
 
 # Create FastAPI application
+logger.info("Initializing FastAPI application", extra={
+    "title": settings.api_title,
+    "version": settings.api_version,
+    "environment": settings.environment
+})
+
 app = FastAPI(
     title=settings.api_title,
     version=settings.api_version,

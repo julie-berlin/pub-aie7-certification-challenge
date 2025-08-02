@@ -6,6 +6,9 @@ from qdrant_client import QdrantClient
 from qdrant_client.http.models import Distance, VectorParams
 
 from ..core.settings import settings
+from ..core.logging_config import get_logger
+
+logger = get_logger("app.services.vector_store")
 
 
 class VectorStoreService:
@@ -27,11 +30,11 @@ class VectorStoreService:
             else:
                 self.client = QdrantClient(url=settings.qdrant_url)
             
-            print(f"✅ Connected to Qdrant at {settings.qdrant_url}")
+            logger.info("Connected to Qdrant", extra={"qdrant_url": settings.qdrant_url})
             return self.client
             
         except Exception as e:
-            print(f"❌ Failed to connect to Qdrant: {e}")
+            logger.error("Failed to connect to Qdrant", extra={"error": str(e), "qdrant_url": settings.qdrant_url})
             raise
     
     def create_collection(self) -> bool:
@@ -51,14 +54,14 @@ class VectorStoreService:
                         distance=Distance.COSINE
                     )
                 )
-                print(f"✅ Created collection: {settings.collection_name}")
+                logger.info("Created collection", extra={"collection_name": settings.collection_name})
             else:
-                print(f"📋 Collection already exists: {settings.collection_name}")
+                logger.info("Collection already exists", extra={"collection_name": settings.collection_name})
             
             return True
             
         except Exception as e:
-            print(f"❌ Error creating collection: {e}")
+            logger.error("Error creating collection", extra={"error": str(e), "collection_name": settings.collection_name})
             return False
     
     def initialize_vector_store(self) -> QdrantVectorStore:
@@ -75,11 +78,11 @@ class VectorStoreService:
                 embedding=self.embedding_model
             )
             
-            print(f"✅ Vector store initialized for collection: {settings.collection_name}")
+            logger.info("Vector store initialized", extra={"collection_name": settings.collection_name})
             return self.vector_store
             
         except Exception as e:
-            print(f"❌ Error initializing vector store: {e}")
+            logger.error("Error initializing vector store", extra={"error": str(e)})
             raise
     
     def add_documents(self, documents: List[Document]) -> bool:
@@ -89,11 +92,11 @@ class VectorStoreService:
                 self.initialize_vector_store()
             
             self.vector_store.add_documents(documents=documents)
-            print(f"✅ Added {len(documents)} documents to vector store")
+            logger.info("Added documents to vector store", extra={"document_count": len(documents)})
             return True
             
         except Exception as e:
-            print(f"❌ Error adding documents: {e}")
+            logger.error("Error adding documents", extra={"error": str(e)})
             return False
     
     def get_retriever(self, top_k: Optional[int] = None):
@@ -111,7 +114,7 @@ class VectorStoreService:
             return retriever.invoke(query)
             
         except Exception as e:
-            print(f"❌ Error searching documents: {e}")
+            logger.error("Error searching documents", extra={"error": str(e), "query": query})
             return []
 
 

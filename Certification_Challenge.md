@@ -41,7 +41,6 @@ Please include the following in your final submission:
 What problem are you trying to solve?
 Why is this a problem?
 
-
 ### Audience
 
 Who is the audience that has this problem and would use your solution?
@@ -52,6 +51,10 @@ Do they nod their head up and down when you talk to them about it?
 1. Write a succinct 1-sentence description of the problem
 2. Write 1-2 paragraphs on why this is a problem for your specific user
 
+**Answer**
+Federal employees and contractors.
+Regulations and codes of conduct can be difficult to read and interpret when applied to a real-world situation. Understanding the implications of a possible conflict of interest or ethics violation ..
+The United States federal government directly employs over 3 million people and there are estimated to be approximately 9.1 million people who work in all capacities.
 
 ---
 
@@ -92,19 +95,23 @@ Why is this the best solution?
 ---
 
 ## Task 4: Building a Quick End-to-End Agentic RAG Prototype
-      - Build an end-to-end Agentic RAG application using a production-grade stack and your choice of commercial off-the-shelf model(s)
+    - Build an end-to-end Agentic RAG application using a production-grade stack and your choice of commercial off-the-shelf model(s)
 
 **Deliverables**
 
 1. Build an end-to-end prototype and deploy it to a local endpoint
 
+**Answer**
+
+Application can be deployed locally via docker compose.
 
 ---
 
 ## Task 5: Creating a Golden Test Data Set
-      - Generate a synthetic test data set to baseline an initial evaluation with RAGAS
+    - Generate a synthetic test data set to baseline an initial evaluation with RAGAS
 
 **Deliverables**
+
 1. Assess your pipeline using the RAGAS framework including key metrics faithfulness, response relevance, context precision, and context recall.
 2. Provide a table of your output results.
 
@@ -112,7 +119,7 @@ Why is this the best solution?
 ---
 
 ## Task 6: The Benefits of Advanced Retrieval
-      - Install an advanced retriever of your choosing in our Agentic RAG application.
+    - Install an advanced retriever of your choosing in our Agentic RAG application.
 
 **Deliverables**
 
@@ -123,7 +130,7 @@ Why is this the best solution?
 ---
 
 ## Task 7: Assessing Performance
-      - Assess the performance of the naive agentic RAG application versus the applications with advanced retrieval tooling
+    - Assess the performance of the naive agentic RAG application versus the applications with advanced retrieval tooling
 
 **Deliverables**
 

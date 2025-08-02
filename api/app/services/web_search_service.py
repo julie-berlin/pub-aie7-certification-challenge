@@ -2,6 +2,9 @@ from typing import List, Dict, Any
 from langchain_community.tools.tavily_search import TavilySearchResults
 
 from ..core.settings import settings
+from ..core.logging_config import get_logger
+
+logger = get_logger("app.services.web_search")
 
 
 class WebSearchService:
@@ -39,11 +42,11 @@ class WebSearchService:
                 result["search_type"] = search_type
                 result["query"] = query
             
-            print(f"🔍 {search_type}: Found {len(results)} results")
+            logger.info("Web search completed", extra={"search_type": search_type, "results_count": len(results), "query": query})
             return results
             
         except Exception as e:
-            print(f"⚠️ {search_type} search failed: {e}")
+            logger.warning("Web search failed", extra={"search_type": search_type, "error": str(e), "query": query})
             return []
     
     def search_all_parallel(self, question: str) -> Dict[str, List[Dict[str, Any]]]:
