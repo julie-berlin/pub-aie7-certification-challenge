@@ -103,12 +103,13 @@ class EthicsAssessmentService:
         CURRENT GUIDANCE & PRECEDENTS:
         {guidance_results}
 
-        Provide a structured JSON response with the following format:
+        You MUST respond with ONLY a valid JSON object in this exact format (no other text):
+
         {{
             "simplified": {{
                 "direct_answer": "Clear statement of law/statute violated or 'No violation identified'",
-                "severity": "minor|moderate|serious|no_violation",
-                "immediate_action_required": true/false,
+                "severity": "minor",
+                "immediate_action_required": true,
                 "next_steps_summary": "Brief 1-2 sentence actionable next steps"
             }},
             "detailed_aspects": [
@@ -145,7 +146,11 @@ class EthicsAssessmentService:
             ]
         }}
 
-        Return only valid JSON. Prioritize federal law, supplement with current web guidance.
+        IMPORTANT: 
+        - severity must be exactly one of: "no_violation", "minor", "moderate", "serious"
+        - immediate_action_required must be exactly true or false (boolean)
+        - Return ONLY the JSON, no markdown formatting or extra text
+        - Prioritize federal law, supplement with current web guidance
         """
         
         self.structured_chain = (
@@ -163,6 +168,8 @@ class EthicsAssessmentService:
                                         penalty_results: str,
                                         guidance_results: str) -> EthicsAssessment:
         """Generate structured ethics assessment with simplified and detailed views"""
+        
+        
         try:
             response = self.structured_chain.invoke({
                 "question": question,
@@ -176,7 +183,16 @@ class EthicsAssessmentService:
             
             # Parse JSON response
             try:
-                assessment_data = json.loads(response)
+                # Clean the response of any markdown formatting
+                clean_response = response.strip()
+                if clean_response.startswith('```json'):
+                    clean_response = clean_response[7:]
+                if clean_response.endswith('```'):
+                    clean_response = clean_response[:-3]
+                clean_response = clean_response.strip()
+                
+                print(f"🔍 Attempting to parse JSON response: {clean_response[:200]}...")
+                assessment_data = json.loads(clean_response)
                 
                 # Create structured assessment
                 simplified = SimplifiedAssessment(
@@ -195,13 +211,16 @@ class EthicsAssessmentService:
                     for aspect in assessment_data["detailed_aspects"]
                 ]
                 
-                return EthicsAssessment(
+                assessment = EthicsAssessment(
                     simplified=simplified,
                     detailed_aspects=detailed_aspects
                 )
+                print(f"✅ Successfully created structured assessment with {len(detailed_aspects)} aspects")
+                return assessment
                 
             except (json.JSONDecodeError, KeyError) as e:
                 print(f"❌ Error parsing structured response: {e}")
+                print(f"❌ Raw response was: {repr(response)}")
                 # Fallback to basic assessment
                 return self._create_fallback_assessment(response)
                 
@@ -211,18 +230,45 @@ class EthicsAssessmentService:
     
     def _create_fallback_assessment(self, response_text: str) -> EthicsAssessment:
         """Create fallback assessment when structured parsing fails"""
+        # Try to extract key information from the text response
+        direct_answer = "Assessment requires review of detailed analysis"
+        severity = SeverityLevel.MODERATE
+        immediate_action_required = True
+        next_steps = "Consult with your ethics official for specific guidance"
+        
+        # Simple heuristics to improve the fallback
+        if response_text:
+            if "no violation" in response_text.lower() or "not inappropriate" in response_text.lower():
+                severity = SeverityLevel.NO_VIOLATION
+                immediate_action_required = False
+                direct_answer = "No clear violation identified"
+            elif "serious" in response_text.lower() or "significant" in response_text.lower():
+                severity = SeverityLevel.SERIOUS
+                direct_answer = "Potential serious ethics violation identified"
+            elif "minor" in response_text.lower():
+                severity = SeverityLevel.MINOR
+                direct_answer = "Minor ethics concern identified"
+            
+            if "disclose" in response_text.lower() or "report" in response_text.lower():
+                next_steps = "Disclose to your ethics official and follow agency procedures"
+        
         return EthicsAssessment(
             simplified=SimplifiedAssessment(
-                direct_answer="Assessment could not be structured properly",
-                severity=SeverityLevel.MODERATE,
-                immediate_action_required=True,
-                next_steps_summary="Review the detailed response for guidance"
+                direct_answer=direct_answer,
+                severity=severity,
+                immediate_action_required=immediate_action_required,
+                next_steps_summary=next_steps
             ),
             detailed_aspects=[
                 DetailedAspect(
-                    title="Full Assessment",
+                    title="Complete Assessment",
                     icon="📄",
-                    content=response_text
+                    content=response_text if response_text else "No detailed assessment available"
+                ),
+                DetailedAspect(
+                    title="Next Steps",
+                    icon="🚨",
+                    content="This assessment was generated using fallback processing. Please consult with your ethics official for authoritative guidance."
                 )
             ]
         )

@@ -74,9 +74,15 @@ async def assess_ethics_violation(
     try:
         response = workflow_service.process_ethics_consultation(request)
         
+        # Debug logging
+        print(f"🔍 Response assessment exists: {response.assessment is not None}")
+        if response.assessment:
+            print(f"🔍 Assessment type: {type(response.assessment)}")
+        
         # Transform to match frontend expectations
         return {
             "response": response.response,
+            "assessment": response.assessment.model_dump() if response.assessment else None,
             "searchPlan": response.search_plan,
             "sources": {
                 "federalLawChunks": response.federal_law_sources,

@@ -51,27 +51,30 @@ export default function ChatMessage({ message, assessment, className }: ChatMess
             </button>
           )}
           
-          <div className="prose prose-sm max-w-none">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={{
-                h1: (props) => <h1 className="text-lg font-bold mb-2 mt-3" {...props} />,
-                h2: (props) => <h2 className="text-base font-bold mb-2 mt-3" {...props} />,
-                h3: (props) => <h3 className="text-sm font-bold mb-1 mt-2" {...props} />,
-                h4: (props) => <h4 className="text-sm font-semibold mb-1 mt-2" {...props} />,
-                p: (props) => <p className="text-sm mb-2" {...props} />,
-                ul: (props) => <ul className="list-disc ml-4 mb-2 space-y-1" {...props} />,
-                ol: (props) => <ol className="list-decimal ml-4 mb-2 space-y-1" {...props} />,
-                li: (props) => <li className="text-sm" {...props} />,
-                strong: (props) => <strong className="font-semibold" {...props} />,
-                em: (props) => <em className="italic" {...props} />,
-                code: (props) => <code className="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono" {...props} />,
-                blockquote: (props) => <blockquote className="border-l-4 border-gray-300 pl-3 italic text-gray-600" {...props} />,
-              }}
-            >
-              {message.content}
-            </ReactMarkdown>
-          </div>
+          {/* Only show verbose text response if no assessment is available */}
+          {!assessment && (
+            <div className="prose prose-sm max-w-none">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  h1: (props) => <h1 className="text-lg font-bold mb-2 mt-3" {...props} />,
+                  h2: (props) => <h2 className="text-base font-bold mb-2 mt-3" {...props} />,
+                  h3: (props) => <h3 className="text-sm font-bold mb-1 mt-2" {...props} />,
+                  h4: (props) => <h4 className="text-sm font-semibold mb-1 mt-2" {...props} />,
+                  p: (props) => <p className="text-sm mb-2" {...props} />,
+                  ul: (props) => <ul className="list-disc ml-4 mb-2 space-y-1" {...props} />,
+                  ol: (props) => <ol className="list-decimal ml-4 mb-2 space-y-1" {...props} />,
+                  li: (props) => <li className="text-sm" {...props} />,
+                  strong: (props) => <strong className="font-semibold" {...props} />,
+                  em: (props) => <em className="italic" {...props} />,
+                  code: (props) => <code className="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono" {...props} />,
+                  blockquote: (props) => <blockquote className="border-l-4 border-gray-300 pl-3 italic text-gray-600" {...props} />,
+                }}
+              >
+                {message.content}
+              </ReactMarkdown>
+            </div>
+          )}
           
           {/* Show assessment card for assistant messages with assessment */}
           {!isUser && assessment && (

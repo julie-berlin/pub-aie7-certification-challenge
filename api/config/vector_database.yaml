@@ -1,6 +1,6 @@
 # Vector database configuration
 qdrant:
-  url: "http://localhost:6333"
+  url: "http://qdrant:6333"
   collection_name: "ethics_knowledge_index"
   embedding_dimension: 1536
   distance_metric: "cosine"

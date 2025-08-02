@@ -99,6 +99,7 @@ class AgenticWorkflowService:
             guidance_results = str(state.get("guidance_web_results", []))
             
             # Generate structured assessment
+            print("🔍 Generating structured assessment...")
             assessment = self.ethics_assessor.assess_ethics_scenario_structured(
                 question=state["question"],
                 search_plan=state.get("search_plan", ""),
@@ -108,6 +109,7 @@ class AgenticWorkflowService:
                 penalty_results=penalty_results,
                 guidance_results=guidance_results
             )
+            print(f"✅ Assessment generated: {assessment.simplified.direct_answer[:100]}...")
             
             # Also generate traditional response for backward compatibility
             response = self.ethics_assessor.assess_ethics_scenario(

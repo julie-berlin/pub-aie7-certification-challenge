@@ -1,3 +1,4 @@
+import os
 from typing import List
 from .config_loader import config_loader
 
@@ -47,7 +48,7 @@ class AppSettings:
         
         # Vector Database
         vector_config = config_loader.get_config("vector_database")
-        self.qdrant_url = vector_config["qdrant"]["url"]
+        self.qdrant_url = os.getenv("QDRANT_URL", vector_config["qdrant"]["url"])
         self.collection_name = vector_config["qdrant"]["collection_name"]
         self.embedding_dimension = vector_config["qdrant"]["embedding_dimension"]
         self.retrieval_top_k = vector_config["retrieval"]["top_k"]
