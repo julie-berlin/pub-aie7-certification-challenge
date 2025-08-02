@@ -60,6 +60,43 @@ async def health_check() -> HealthResponse:
         )
 
 
+@router.post("/assess")
+async def assess_ethics_violation(
+    request: ChatRequest,
+    workflow_service: AgenticWorkflowService = Depends(get_workflow_service)
+) -> dict:
+    """
+    Assess ethics violation - compatible with frontend expectations
+    
+    - **question**: Ethics question or scenario description  
+    - **user_context**: User context (role, agency, clearance)
+    """
+    try:
+        response = workflow_service.process_ethics_consultation(request)
+        
+        # Debug logging
+        print(f"🔍 Response assessment exists: {response.assessment is not None}")
+        if response.assessment:
+            print(f"🔍 Assessment type: {type(response.assessment)}")
+        
+        # Transform to match frontend expectations
+        return {
+            "response": response.response,
+            "assessment": response.assessment.model_dump() if response.assessment else None,
+            "searchPlan": response.search_plan,
+            "sources": {
+                "federalLawChunks": response.federal_law_sources,
+                "webSources": response.web_sources
+            }
+        }
+        
+    except Exception as e:
+        return {
+            "response": "I apologize, but I encountered an error processing your request. Please try again.",
+            "error": f"Error processing ethics assessment: {str(e)}"
+        }
+
+
 @router.get("/ping")
 async def ping():
     """Simple ping endpoint"""

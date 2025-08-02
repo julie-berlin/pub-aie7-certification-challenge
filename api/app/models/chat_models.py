@@ -43,8 +43,38 @@ class SearchResult(BaseModel):
     score: Optional[float] = None
 
 
+class SeverityLevel(str, Enum):
+    """Ethics violation severity levels"""
+    MINOR = "minor"
+    MODERATE = "moderate" 
+    SERIOUS = "serious"
+    NO_VIOLATION = "no_violation"
+
+
+class SimplifiedAssessment(BaseModel):
+    """Simplified assessment for immediate display"""
+    direct_answer: str = Field(..., description="Direct answer: law/statute violated or no violation")
+    severity: SeverityLevel = Field(..., description="Violation severity level")
+    immediate_action_required: bool = Field(..., description="Whether immediate action is needed")
+    next_steps_summary: str = Field(..., description="Brief actionable next steps")
+
+
+class DetailedAspect(BaseModel):
+    """Detailed aspect for expandable sections"""
+    title: str = Field(..., description="Aspect title")
+    content: str = Field(..., description="Detailed explanation")
+    icon: str = Field(..., description="Emoji icon for the aspect")
+
+
 class EthicsAssessment(BaseModel):
-    """Structured ethics assessment response"""
+    """Complete structured ethics assessment response"""
+    # Simplified view
+    simplified: SimplifiedAssessment
+    
+    # Detailed expandable aspects
+    detailed_aspects: List[DetailedAspect] = Field(default_factory=list)
+    
+    # Legacy fields (kept for compatibility)
     violation_type: Optional[str] = Field(None, description="Type of potential violation")
     severity_level: Optional[str] = Field(None, description="Minor, moderate, or serious")
     legal_penalties: Optional[str] = Field(None, description="Applicable penalties")
@@ -70,6 +100,33 @@ class ChatResponse(BaseModel):
     # Processing metadata
     processing_time_seconds: Optional[float] = None
     search_plan: Optional[str] = Field(None, description="Research strategy used")
+
+
+class DocumentUploadRequest(BaseModel):
+    """Request model for document upload metadata"""
+    filename: str
+    description: Optional[str] = None
+    category: Optional[str] = Field("ethics_guidance", description="Document category")
+
+
+class DocumentUploadResponse(BaseModel):
+    """Response model for document upload"""
+    document_id: str
+    filename: str
+    file_size: int
+    chunks_created: int
+    processing_time_seconds: float
+    status: str = "processed"
+
+
+class DocumentInfo(BaseModel):
+    """Document information model"""
+    document_id: str
+    filename: str
+    file_size: int
+    upload_timestamp: str
+    chunks_count: int
+    category: str
 
 
 class HealthResponse(BaseModel):

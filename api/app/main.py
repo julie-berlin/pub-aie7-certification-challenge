@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 from .core.settings import settings
 from .routers.chat_router import router as chat_router
+from .routers.document_router import router as document_router
 
 # Load environment variables
 load_dotenv(".env.local")
@@ -34,6 +35,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(chat_router)
+app.include_router(document_router)
 
 # Root endpoint
 @app.get("/")

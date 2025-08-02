@@ -5,7 +5,7 @@ import { ChatMessage as ChatMessageType, UserContext } from '@/types'
 import { assessEthicsViolation } from '@/lib/api'
 import { generateId, cn } from '@/lib/utils'
 import ChatMessage from './ChatMessage'
-import { Send, Loader2, AlertCircle } from 'lucide-react'
+import { Send, Loader2, AlertCircle, Bot } from 'lucide-react'
 
 interface ChatInterfaceProps {
   userContext: UserContext
@@ -73,6 +73,7 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
         role: 'assistant',
         content: response.response,
         timestamp: new Date(),
+        assessment: response.assessment,
       }
 
       setMessages(prev => [...prev, assistantMessage])
@@ -99,13 +100,17 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
     <div className={cn('flex flex-col h-full', className)}>
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
         {messages.map((message) => (
-          <ChatMessage key={message.id} message={message} />
+          <ChatMessage 
+            key={message.id} 
+            message={message} 
+            assessment={message.assessment}
+          />
         ))}
         
         {isLoading && (
           <div className="flex items-center gap-3 mb-4">
             <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-              <Loader2 className="w-4 h-4 text-primary-600 animate-spin" />
+              <Bot className="w-4 h-4 text-primary-600" />
             </div>
             <div className="chat-bubble chat-bubble-assistant">
               <div className="flex items-center gap-2">

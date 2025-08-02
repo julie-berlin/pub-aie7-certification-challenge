@@ -98,7 +98,20 @@ class AgenticWorkflowService:
             penalty_results = str(state.get("penalty_web_results", []))
             guidance_results = str(state.get("guidance_web_results", []))
             
-            # Generate assessment
+            # Generate structured assessment
+            print("🔍 Generating structured assessment...")
+            assessment = self.ethics_assessor.assess_ethics_scenario_structured(
+                question=state["question"],
+                search_plan=state.get("search_plan", ""),
+                user_context=state.get("user_context", {}),
+                federal_context=federal_context,
+                general_results=general_results,
+                penalty_results=penalty_results,
+                guidance_results=guidance_results
+            )
+            print(f"✅ Assessment generated: {assessment.simplified.direct_answer[:100]}...")
+            
+            # Also generate traditional response for backward compatibility
             response = self.ethics_assessor.assess_ethics_scenario(
                 question=state["question"],
                 search_plan=state.get("search_plan", ""),
@@ -109,7 +122,7 @@ class AgenticWorkflowService:
                 guidance_results=guidance_results
             )
             
-            return {"response": response}
+            return {"response": response, "assessment": assessment}
         
         def finalize_response(state: ParallelEthicsState) -> ParallelEthicsState:
             """Finalize response and calculate processing time"""
@@ -195,6 +208,7 @@ class AgenticWorkflowService:
             response = ChatResponse(
                 question=request.question,
                 response=final_state.get("response", ""),
+                assessment=final_state.get("assessment"),
                 federal_law_sources=len(final_state.get("context", [])),
                 web_sources=len(final_state.get("web_results", [])),
                 search_results=search_results,

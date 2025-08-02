@@ -1,6 +1,6 @@
 # Data processing configuration
 documents:
-  data_directory: "../data"
+  data_directory: "/app/data"
   ethics_pdf_filename: "Compilation of Federal Ethics Laws (2025).pdf"
   supported_formats:
     - "pdf"
