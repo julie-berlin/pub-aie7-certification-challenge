@@ -78,6 +78,8 @@ python3 scripts/langsmith_eval.py
 - ✅ Document upload and management system
 - ✅ Simplified assessment UI with expandable detailed sections
 - ✅ Severity color-coding and actionable guidance
+- ✅ Docker deployment with proper service integration
+- ✅ Production-ready document loading and vector store connectivity
 - 🔄 RAGAS evaluation framework (in progress)
 - 🔄 Advanced retrieval optimization (planned)
 
@@ -86,6 +88,12 @@ python3 scripts/langsmith_eval.py
 - In-memory Qdrant loses data on restart (production needs persistent storage)
 - No user authentication or session management yet
 - Document deletion from vector store requires additional Qdrant cleanup
+
+## Pending Improvements
+- Include original scenario and user context in downloadable reports
+- Use comprehensive traditional response format for detailed downloadable reports
+- Enhanced mobile responsiveness for assessment cards
+- Improved report formatting and organization
 
 ## Performance Notes
 - Current chunking: 750 characters with tiktoken counting
