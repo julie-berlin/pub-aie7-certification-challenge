@@ -72,6 +72,33 @@ class ChatResponse(BaseModel):
     search_plan: Optional[str] = Field(None, description="Research strategy used")
 
 
+class DocumentUploadRequest(BaseModel):
+    """Request model for document upload metadata"""
+    filename: str
+    description: Optional[str] = None
+    category: Optional[str] = Field("ethics_guidance", description="Document category")
+
+
+class DocumentUploadResponse(BaseModel):
+    """Response model for document upload"""
+    document_id: str
+    filename: str
+    file_size: int
+    chunks_created: int
+    processing_time_seconds: float
+    status: str = "processed"
+
+
+class DocumentInfo(BaseModel):
+    """Document information model"""
+    document_id: str
+    filename: str
+    file_size: int
+    upload_timestamp: str
+    chunks_count: int
+    category: str
+
+
 class HealthResponse(BaseModel):
     """Health check response"""
     status: str = "healthy"

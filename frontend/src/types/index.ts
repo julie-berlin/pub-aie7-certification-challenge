@@ -34,3 +34,21 @@ export interface ChatSession {
   createdAt: Date
   updatedAt: Date
 }
+
+export interface DocumentInfo {
+  document_id: string
+  filename: string
+  file_size: number
+  upload_timestamp: string
+  chunks_count: number
+  category: string
+}
+
+export interface DocumentUploadResponse {
+  document_id: string
+  filename: string
+  file_size: number
+  chunks_created: number
+  processing_time_seconds: number
+  status: string
+}

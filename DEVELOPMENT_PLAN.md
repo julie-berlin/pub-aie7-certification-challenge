@@ -10,6 +10,7 @@
 - ✅ User context collection and personalized guidance
 - ✅ FastAPI backend with streamlined agentic workflow
 - ✅ Next.js frontend (IntegriBot) with full chat interface
+- ✅ Document upload functionality with vector store integration
 - ✅ Production-ready architecture without reflection overhead
 
 **READY FOR**: Docker deployment and evaluation framework
@@ -96,11 +97,13 @@ Frontend (IntegriBot)     Backend (FastAPI)        AI Workflow
   - [ ] Allow download of detailed report with full analysis and conclusion
   - [ ] Update backend response format to support simplified + detailed views
   - [ ] Design UI components for severity indicators and expandable sections
-- [ ] **Document Upload Functionality**
-  - [ ] Add document upload capability for company codes of conduct and relevant policies
-  - [ ] Implement PDF/document parsing and indexing into vector database
-  - [ ] Integrate uploaded documents into RAG retrieval process
-  - [ ] Update assessment logic to consider both federal law and company-specific policies
+- [x] **Document Upload Functionality** ✅
+  - [x] Add document upload capability for company codes of conduct and relevant policies
+  - [x] Implement PDF/document parsing and indexing into vector database
+  - [x] Integrate uploaded documents into RAG retrieval process
+  - [x] Created drag-and-drop upload interface with progress tracking
+  - [x] Added document management UI with listing and deletion capabilities
+  - [x] Implemented file validation (PDF only, 50MB limit) and metadata tracking
 
 #### **Day 2-3 (Aug 2-3): Evaluation & Testing**
 - [ ] **RAGAS evaluation implementation**
@@ -311,6 +314,8 @@ Frontend (IntegriBot)     Backend (FastAPI)        AI Workflow
 - [x] **UI improvements** - Fixed loading spinner, kept robot icon consistent  
 - [x] **Download functionality** - Users can download responses as markdown files
 - [x] **Docker deployment** - Backend and frontend running in containers
+- [x] **Document upload system** - Complete PDF upload with vector store integration
+- [x] **Document management UI** - Drag-and-drop interface with document library
 - [x] **Production testing** - Full end-to-end functionality verified
 
 ### 📅 NEXT STEPS:
