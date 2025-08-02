@@ -23,8 +23,6 @@ async def ethics_consultation(
     
     - **question**: Ethics question or scenario description
     - **user_context**: Optional user context (role, agency, clearance)
-    - **include_reflection**: Include quality assurance reflection
-    - **include_confidence**: Include confidence scoring
     """
     try:
         response = workflow_service.process_ethics_consultation(request)

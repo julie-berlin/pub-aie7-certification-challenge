@@ -44,8 +44,6 @@ async def test_api_endpoints():
                     "agency": "GSA",
                     "seniority": "GS-12"
                 },
-                "include_reflection": True,
-                "include_confidence": True
             }
             
             print(f"Question: {test_request['question']}")
@@ -60,7 +58,6 @@ async def test_api_endpoints():
                 result = response.json()
                 print(f"✅ Chat response received ({response.status_code})")
                 print(f"   Processing time: {result.get('processing_time_seconds', 0):.2f}s")
-                print(f"   Confidence: {result.get('confidence_score', 0)}/100")
                 print(f"   Federal sources: {result.get('federal_law_sources', 0)}")
                 print(f"   Web sources: {result.get('web_sources', 0)}")
                 print(f"   Response preview: {result.get('response', '')[:100]}...")
@@ -90,8 +87,7 @@ def test_pydantic_models():
         # Test ChatRequest
         chat_request = ChatRequest(
             question="Is this an ethics violation?",
-            user_context=user_context,
-            include_reflection=True
+            user_context=user_context
         )
         print(f"✅ ChatRequest: {len(chat_request.question)} chars")
         

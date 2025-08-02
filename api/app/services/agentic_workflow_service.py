@@ -9,7 +9,6 @@ from .vector_store_service import VectorStoreService
 from .web_search_service import WebSearchService
 from .planning_agent_service import PlanningAgentService
 from .ethics_assessment_service import EthicsAssessmentService
-from .reflection_agent_service import ReflectionAgentService
 
 
 class AgenticWorkflowService:
@@ -22,7 +21,6 @@ class AgenticWorkflowService:
         self.web_search = WebSearchService()
         self.planning_agent = PlanningAgentService()
         self.ethics_assessor = EthicsAssessmentService()
-        self.reflection_agent = ReflectionAgentService()
         
         # Initialize vector store and load documents
         self._initialize_knowledge_base()
@@ -113,20 +111,13 @@ class AgenticWorkflowService:
             
             return {"response": response}
         
-        def reflect_on_response(state: ParallelEthicsState) -> ParallelEthicsState:
-            """Quality assurance reflection"""
-            reflection_result = self.reflection_agent.reflect_on_response(
-                state["question"], 
-                state["response"]
-            )
-            
+        def finalize_response(state: ParallelEthicsState) -> ParallelEthicsState:
+            """Finalize response and calculate processing time"""
             # Calculate processing time
             start_time = state.get("processing_start_time", time.time())
             processing_time = time.time() - start_time
             
             return {
-                "reflection": reflection_result["reflection"],
-                "confidence_score": reflection_result["confidence_score"],
                 "processing_time_seconds": processing_time
             }
         
@@ -142,7 +133,7 @@ class AgenticWorkflowService:
         graph_builder.add_node("search_guidance", search_current_guidance)
         graph_builder.add_node("combine_results", combine_search_results)
         graph_builder.add_node("assess_violation", assess_ethics_violation)
-        graph_builder.add_node("reflect", reflect_on_response)
+        graph_builder.add_node("finalize", finalize_response)
         
         # Define workflow edges
         graph_builder.add_edge(START, "collect_context")
@@ -159,9 +150,9 @@ class AgenticWorkflowService:
         graph_builder.add_edge("search_penalties", "combine_results")
         graph_builder.add_edge("search_guidance", "combine_results")
         
-        # Final assessment and reflection
+        # Final assessment and finalization
         graph_builder.add_edge("combine_results", "assess_violation")
-        graph_builder.add_edge("assess_violation", "reflect")
+        graph_builder.add_edge("assess_violation", "finalize")
         
         return graph_builder.compile()
     
@@ -182,8 +173,6 @@ class AgenticWorkflowService:
                 "web_results": [],
                 "assessment": "",
                 "response": "",
-                "reflection": None,
-                "confidence_score": None,
                 "processing_start_time": start_time,
                 "processing_time_seconds": None
             }
@@ -206,8 +195,6 @@ class AgenticWorkflowService:
             response = ChatResponse(
                 question=request.question,
                 response=final_state.get("response", ""),
-                confidence_score=final_state.get("confidence_score"),
-                reflection=final_state.get("reflection") if request.include_reflection else None,
                 federal_law_sources=len(final_state.get("context", [])),
                 web_sources=len(final_state.get("web_results", [])),
                 search_results=search_results,
@@ -222,6 +209,5 @@ class AgenticWorkflowService:
             return ChatResponse(
                 question=request.question,
                 response=f"I apologize, but I encountered an error processing your ethics consultation: {str(e)}",
-                confidence_score=0.0,
                 processing_time_seconds=time.time() - start_time
             )
