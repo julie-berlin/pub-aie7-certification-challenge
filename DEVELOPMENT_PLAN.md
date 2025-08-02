@@ -108,6 +108,8 @@ Frontend (IntegriBot)     Backend (FastAPI)        AI Workflow
   - [ ] Implement RAGAS metrics (faithfulness, relevance, precision, recall)
   - [ ] Run baseline evaluation with parallel system
 - [ ] **Advanced retrieval for Task 6**
+  - [ ] Experiment with alternative chunking strategies including voyage-context-3 embedding model
+  - [ ] Compare chunking approaches: recursive character splitting vs semantic chunking vs contextual chunking
   - [ ] Implement semantic reranking or hybrid search
   - [ ] Compare performance vs baseline system
   - [ ] Document results in evaluation tables
