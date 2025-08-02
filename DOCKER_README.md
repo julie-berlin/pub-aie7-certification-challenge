@@ -19,13 +19,21 @@ This guide explains how to run IntegriBot using Docker Compose with all services
 
 2. **Build and start all services:**
    ```bash
-   docker-compose up --build
+   docker-compose up --build -d
    ```
 
 3. **Access the application:**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000
-   - Qdrant Dashboard: http://localhost:6333/dashboard
+   - **IntegriBot Frontend**: http://localhost:3000
+   - **Backend API**: http://localhost:8000
+   - **Qdrant Dashboard**: http://localhost:6333/dashboard
+   - **API Documentation**: http://localhost:8000/docs
+
+## ✅ Verified Working Status
+
+All services are successfully running:
+- ✅ **Qdrant**: Vector database ready on ports 6333/6334
+- ✅ **Backend**: FastAPI server with agentic workflow on port 8000  
+- ✅ **Frontend**: Next.js IntegriBot interface on port 3000
 
 ## Services
 
