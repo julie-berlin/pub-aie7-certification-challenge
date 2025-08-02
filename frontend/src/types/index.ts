@@ -10,6 +10,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant'
   content: string
   timestamp: Date
+  assessment?: EthicsAssessment
 }
 
 export interface EthicsAssessmentRequest {
@@ -17,8 +18,27 @@ export interface EthicsAssessmentRequest {
   userContext: UserContext
 }
 
+export interface SimplifiedAssessment {
+  direct_answer: string
+  severity: 'minor' | 'moderate' | 'serious' | 'no_violation'
+  immediate_action_required: boolean
+  next_steps_summary: string
+}
+
+export interface DetailedAspect {
+  title: string
+  icon: string
+  content: string
+}
+
+export interface EthicsAssessment {
+  simplified: SimplifiedAssessment
+  detailed_aspects: DetailedAspect[]
+}
+
 export interface EthicsAssessmentResponse {
   response: string
+  assessment?: EthicsAssessment
   searchPlan?: string
   sources?: {
     federalLawChunks: number

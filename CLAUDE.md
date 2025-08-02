@@ -38,9 +38,13 @@
 ## Key Features
 - Multi-source knowledge synthesis (federal law + web)
 - Context-aware guidance based on user role
+- Simplified assessment format with severity color-coding
+- Expandable detailed analysis (6 structured aspects)
+- Direct answer identification and actionable next steps
+- Document upload capability for custom policies
 - Step-by-step ethical reasoning with citations
 - Specific penalty and consequence information
-- Actionable corrective guidance
+- Downloadable comprehensive assessment reports
 
 ## Development Commands
 
@@ -68,22 +72,28 @@ python3 scripts/langsmith_eval.py
 ## Current Status
 - ✅ POC notebook with basic and advanced agentic reasoning
 - ✅ Federal ethics law RAG pipeline
-- ✅ Web search integration
+- ✅ Web search integration  
 - ✅ Multi-step violation assessment
-- 🔄 Full-stack application (planned)
-- 🔄 RAGAS evaluation framework (planned)
+- ✅ Full-stack application (FastAPI + Next.js)
+- ✅ Document upload and management system
+- ✅ Simplified assessment UI with expandable detailed sections
+- ✅ Severity color-coding and actionable guidance
+- 🔄 RAGAS evaluation framework (in progress)
 - 🔄 Advanced retrieval optimization (planned)
 
 ## Known Issues
 - Web search requires Tavily API key configuration
 - In-memory Qdrant loses data on restart (production needs persistent storage)
 - No user authentication or session management yet
+- Document deletion from vector store requires additional Qdrant cleanup
 
 ## Performance Notes
 - Current chunking: 750 characters with tiktoken counting
 - Retrieval: Top-5 similarity search
 - Response time: ~10-15 seconds for complex scenarios
 - Context window: Efficiently managed with targeted retrieval
+- Assessment generation: Structured JSON parsing with fallback handling
+- UI responsiveness: Real-time expandable sections and color-coded severity
 
 ## Evaluation Metrics (Planned)
 - **RAGAS**: Faithfulness, answer relevance, context precision, context recall

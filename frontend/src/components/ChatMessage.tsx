@@ -1,17 +1,19 @@
 'use client'
 
-import { ChatMessage as ChatMessageType } from '@/types'
+import { ChatMessage as ChatMessageType, EthicsAssessment } from '@/types'
 import { cn, formatTimestamp } from '@/lib/utils'
 import { User, Bot, Download } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import AssessmentCard from './AssessmentCard'
 
 interface ChatMessageProps {
   message: ChatMessageType
+  assessment?: EthicsAssessment
   className?: string
 }
 
-export default function ChatMessage({ message, className }: ChatMessageProps) {
+export default function ChatMessage({ message, assessment, className }: ChatMessageProps) {
   const isUser = message.role === 'user'
 
   const downloadMarkdown = () => {
@@ -70,6 +72,13 @@ export default function ChatMessage({ message, className }: ChatMessageProps) {
               {message.content}
             </ReactMarkdown>
           </div>
+          
+          {/* Show assessment card for assistant messages with assessment */}
+          {!isUser && assessment && (
+            <div className="mt-4">
+              <AssessmentCard assessment={assessment} />
+            </div>
+          )}
         </div>
         
         <span className="text-xs text-gray-500 mt-1">

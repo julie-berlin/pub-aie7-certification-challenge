@@ -73,6 +73,7 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
         role: 'assistant',
         content: response.response,
         timestamp: new Date(),
+        assessment: response.assessment,
       }
 
       setMessages(prev => [...prev, assistantMessage])
@@ -99,7 +100,11 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
     <div className={cn('flex flex-col h-full', className)}>
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
         {messages.map((message) => (
-          <ChatMessage key={message.id} message={message} />
+          <ChatMessage 
+            key={message.id} 
+            message={message} 
+            assessment={message.assessment}
+          />
         ))}
         
         {isLoading && (

@@ -43,8 +43,38 @@ class SearchResult(BaseModel):
     score: Optional[float] = None
 
 
+class SeverityLevel(str, Enum):
+    """Ethics violation severity levels"""
+    MINOR = "minor"
+    MODERATE = "moderate" 
+    SERIOUS = "serious"
+    NO_VIOLATION = "no_violation"
+
+
+class SimplifiedAssessment(BaseModel):
+    """Simplified assessment for immediate display"""
+    direct_answer: str = Field(..., description="Direct answer: law/statute violated or no violation")
+    severity: SeverityLevel = Field(..., description="Violation severity level")
+    immediate_action_required: bool = Field(..., description="Whether immediate action is needed")
+    next_steps_summary: str = Field(..., description="Brief actionable next steps")
+
+
+class DetailedAspect(BaseModel):
+    """Detailed aspect for expandable sections"""
+    title: str = Field(..., description="Aspect title")
+    content: str = Field(..., description="Detailed explanation")
+    icon: str = Field(..., description="Emoji icon for the aspect")
+
+
 class EthicsAssessment(BaseModel):
-    """Structured ethics assessment response"""
+    """Complete structured ethics assessment response"""
+    # Simplified view
+    simplified: SimplifiedAssessment
+    
+    # Detailed expandable aspects
+    detailed_aspects: List[DetailedAspect] = Field(default_factory=list)
+    
+    # Legacy fields (kept for compatibility)
     violation_type: Optional[str] = Field(None, description="Type of potential violation")
     severity_level: Optional[str] = Field(None, description="Minor, moderate, or serious")
     legal_penalties: Optional[str] = Field(None, description="Applicable penalties")
