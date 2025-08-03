@@ -78,6 +78,26 @@ class AppSettings:
         self.concurrent_searches = workflow_config["parallel_search"]["concurrent_searches"]
         self.planning_timeout = workflow_config["planning_agent"]["timeout_seconds"]
 
+        # Golden Dataset Generation
+        golden_config = config_loader.get_config("golden_dataset")
+        self.ragas_testset_size = golden_config["ragas"]["testset_size"]
+        self.ragas_document_subset_size = golden_config["ragas"]["document_subset_size"]
+        self.ragas_generator_model = golden_config["ragas"]["generator_model"]
+        self.ragas_generator_temperature = golden_config["ragas"]["generator_temperature"]
+        self.ragas_embedding_model = golden_config["ragas"]["embedding_model"]
+        
+        self.dataset_output_directory = golden_config["dataset"]["output_directory"]
+        self.dataset_filename_prefix = golden_config["dataset"]["filename_prefix"]
+        self.dataset_include_timestamp = golden_config["dataset"]["include_timestamp"]
+        
+        self.ground_truth_model = golden_config["ground_truth"]["assessment_model"]
+        self.ground_truth_temperature = golden_config["ground_truth"]["assessment_temperature"]
+        self.ground_truth_max_tokens = golden_config["ground_truth"]["max_tokens"]
+        self.ground_truth_rate_limit_delay = golden_config["ground_truth"]["rate_limit_delay"]
+        
+        self.user_contexts = golden_config["user_contexts"]
+        self.quality_settings = golden_config["quality"]
+
 
 # Global settings instance
 settings = AppSettings()

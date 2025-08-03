@@ -1,7 +1,6 @@
 from typing_extensions import TypedDict
 from typing import List, Optional, Dict, Any
 from langchain_core.documents import Document
-from .chat_models import EthicsAssessment
 
 
 class ParallelEthicsState(TypedDict):
@@ -25,8 +24,7 @@ class ParallelEthicsState(TypedDict):
     # Combined results
     web_results: List[Dict[str, Any]]
 
-    # Assessment
-    assessment: Optional[EthicsAssessment]
+    # Response
     response: str
 
     # Metadata

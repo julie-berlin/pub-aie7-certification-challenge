@@ -1,36 +1,63 @@
 # Golden Dataset Generation Configuration
 
-# Generation settings
-generation:
-  testset_size: 2  # Minimal size to debug sample generation
-  output_directory: 'eval/fixtures'
-  filename_prefix: 'golden_dataset'
-
-# AI models for testset generation
-models:
-  generator_llm:
-    model: 'gpt-4.1-nano'
-    temperature: 0.7  # Some creativity for diverse questions
-  critic_llm:
-    model: 'gpt-4.1-mini'
-    temperature: 0.1  # More consistent for evaluation
-  embedding_model: 'text-embedding-3-small'
-
-# Query distribution for different question types (must sum to 1.0)
-query_distribution:
-  single_hop_specific: 0.5    # Basic factual questions about ethics rules
-  multi_hop_abstract: 0.3     # Complex ethical reasoning scenarios
-  multi_hop_specific: 0.2     # Questions requiring multiple sources
-
-# Default user context for generated scenarios
-default_user_context:
-  role: 'federal_employee'
-  agency: 'Various'
-  seniority: 'GS-12'
+# RAGAS TestsetGenerator settings
+ragas:
+  testset_size: 10
+  document_subset_size: 20
+  generator_model: "gpt-4o-mini"
+  generator_temperature: 0.3
+  embedding_model: "text-embedding-3-small"
+  
+# Dataset creation settings
+dataset:
+  output_directory: "eval/fixtures"
+  filename_prefix: "golden_dataset_kg"
+  include_timestamp: true
+  
+# Ground truth generation settings
+ground_truth:
+  assessment_model: "gpt-4o"
+  assessment_temperature: 0.1
+  max_tokens: 3000
+  rate_limit_delay: 1.0  # seconds between requests
+  
+# User context variations for diverse scenarios
+user_contexts:
+  - role: "federal_employee"
+    agency: "GSA"
+    seniority: "GS-12"
+    clearance: "none"
+  - role: "contractor"
+    agency: "DOD"
+    seniority: "senior"
+    clearance: "secret"
+  - role: "federal_employee"
+    agency: "EPA"
+    seniority: "GS-14"
+    clearance: "public_trust"
+  - role: "senior_executive"
+    agency: "Treasury"
+    seniority: "SES"
+    clearance: "top_secret"
+  - role: "procurement_officer"
+    agency: "DHS"
+    seniority: "GS-13"
+    clearance: "secret"
+    
+# Quality control settings
+quality:
+  min_question_length: 20
+  max_question_length: 500
+  min_ground_truth_length: 100
+  required_sections:
+    - "Direct Answer"
+    - "Severity Level"
+    - "Legal Foundation"
+    - "Immediate Actions Required"
 
 # Dataset metadata
 metadata:
   dataset_name: 'Federal Ethics Golden Dataset'
   description: 'Synthetic test cases generated using RAGAS TestsetGenerator from federal ethics laws'
-  version: '1.0'
+  version: '2.0'
   source: 'federal_ethics_laws'
