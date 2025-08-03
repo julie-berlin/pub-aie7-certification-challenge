@@ -25,6 +25,7 @@ dependencies = [
     # Document Processing
     "pymupdf>=1.26.1",
     "tiktoken>=0.5.2",
+    "llama-index>=0.10.0",
     # Utilities
     "python-dotenv>=1.0.0",
     "nest-asyncio>=1.5.8",

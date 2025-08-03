@@ -1,10 +1,13 @@
 # Data processing configuration
 documents:
-  data_directory: '../data'
+  data_directory: 'data'
   supported_formats:
     - 'pdf'
     - 'txt'
     - 'md'
+
+evaluation:
+  test_dataset_path: 'eval/fixtures/test_dataset.json'
 
 text_splitting:
   strategy: 'recursive_character'

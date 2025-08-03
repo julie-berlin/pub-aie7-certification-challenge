@@ -4,7 +4,7 @@ from typing import List
 from langchain_community.document_loaders import DirectoryLoader, PyMuPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
-from llama_index.core.text_splitter import SemanticSplitterNodeParser
+from llama_index.core.node_parser import SemanticSplitterNodeParser
 
 from ..core.settings import settings
 
@@ -18,7 +18,7 @@ class DocumentLoaderService:
     def _create_text_splitter(self) -> RecursiveCharacterTextSplitter:
         """Create text splitter with tiktoken length function"""
         def tiktoken_length_function(text: str) -> int:
-            tokens = tiktoken.encoding_for_model(settings.openai.embedding_model).encode(text)
+            tokens = tiktoken.encoding_for_model(settings.embedding_model).encode(text)
             return len(tokens)
 
         return RecursiveCharacterTextSplitter(
@@ -30,9 +30,9 @@ class DocumentLoaderService:
     def _create_semantic_splitter(self) -> SemanticSplitterNodeParser:
         """Create semantic splitter with llama_index"""
         return SemanticSplitterNodeParser(
-            buffer_size=settings.semantic_splitting.buffer_size,
-            breakpoint_percentile_threshold=settings.semantic_splitting.breakpoint_percentile_threshold,
-            embed_model=settings.llama_index.embed_model
+            buffer_size=settings.semantic_buffer_size,
+            breakpoint_percentile_threshold=settings.semantic_breakpoint_threshold,
+            embed_model=settings.embedding_model
         )
 
     def load_ethics_documents(self) -> List[Document]:

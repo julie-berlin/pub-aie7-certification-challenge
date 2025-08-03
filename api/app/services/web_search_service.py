@@ -12,6 +12,7 @@ class WebSearchService:
     
     def __init__(self):
         self.search_tool = TavilySearch(
+            api_key=settings.tavily_api_key,
             max_results=3,
             search_depth="advanced",
             include_domains=["osg.gov", "oge.gov", "ethics.gov", "gsa.gov"]
@@ -46,7 +47,12 @@ class WebSearchService:
             return results
             
         except Exception as e:
-            logger.warning("Web search failed", extra={"search_type": search_type, "error": str(e), "query": query})
+            logger.error("Web search failed", extra={
+                "search_type": search_type, 
+                "error": str(e),
+                "error_type": type(e).__name__,
+                "query": query
+            })
             return []
     
     def search_all_parallel(self, question: str) -> Dict[str, List[Dict[str, Any]]]:

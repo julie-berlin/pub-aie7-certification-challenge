@@ -6,9 +6,6 @@ openai:
   temperature: 0.1
   max_tokens: 2000
 
-llama_index:
-  embed_model: 'text-embedding-ada-002'
-
 langchain:
   tracing_enabled: true
   project_name: 'federal-ethics-chatbot'
