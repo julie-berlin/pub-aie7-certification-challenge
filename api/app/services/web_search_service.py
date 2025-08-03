@@ -36,8 +36,15 @@ class WebSearchService:
     def _perform_search(self, query: str, search_type: str) -> List[Dict[str, Any]]:
         """Perform web search with error handling"""
         try:
-            results = self.search_tool.invoke(query)
-            logger.info("Raw search results", extra={"results_type": type(results), "results_content": str(results)[:200]})
+            raw_results = self.search_tool.invoke(query)
+            logger.info("Raw search results", extra={"results_type": type(raw_results), "results_content": str(raw_results)[:200]})
+            
+            # Extract results list from Tavily response
+            if isinstance(raw_results, dict) and 'results' in raw_results:
+                results = raw_results['results']
+            else:
+                # Handle case where results is already a list
+                results = raw_results if isinstance(raw_results, list) else []
             
             # Add search type metadata
             for result in results:

@@ -43,6 +43,7 @@ class VectorStoreService:
             if not self.client:
                 self.initialize_client()
             
+            # Check if collection already exists
             collections = self.client.get_collections()
             collection_names = [col.name for col in collections.collections]
             
@@ -61,8 +62,14 @@ class VectorStoreService:
             return True
             
         except Exception as e:
-            logger.error("Error creating collection", extra={"error": str(e), "collection_name": settings.collection_name})
-            return False
+            # Check if the error is specifically about collection already existing
+            error_str = str(e).lower()
+            if "already exists" in error_str or "conflict" in error_str:
+                logger.info("Collection already exists (from exception)", extra={"collection_name": settings.collection_name})
+                return True
+            else:
+                logger.error("Error creating collection", extra={"error": str(e), "collection_name": settings.collection_name})
+                return False
     
     def initialize_vector_store(self) -> QdrantVectorStore:
         """Initialize vector store with Qdrant client"""
@@ -70,7 +77,12 @@ class VectorStoreService:
             if not self.client:
                 self.initialize_client()
             
-            self.create_collection()
+            # Try to create collection, but don't fail if it already exists
+            collection_created = self.create_collection()
+            if not collection_created:
+                # Collection creation failed, but it might already exist
+                # Try to proceed with vector store initialization anyway
+                logger.warning("Collection creation returned False, attempting to use existing collection")
             
             self.vector_store = QdrantVectorStore(
                 client=self.client,
