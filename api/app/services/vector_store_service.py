@@ -37,8 +37,11 @@ class VectorStoreService:
             logger.error("Failed to connect to Qdrant", extra={"error": str(e), "qdrant_url": settings.qdrant_url})
             raise
     
-    def create_collection(self) -> bool:
+    def create_collection(self, collection_name: Optional[str] = None) -> bool:
         """Create ethics knowledge collection if it doesn't exist"""
+        if collection_name is None:
+            collection_name = settings.collection_name
+            
         try:
             if not self.client:
                 self.initialize_client()
@@ -47,17 +50,17 @@ class VectorStoreService:
             collections = self.client.get_collections()
             collection_names = [col.name for col in collections.collections]
             
-            if settings.collection_name not in collection_names:
+            if collection_name not in collection_names:
                 self.client.create_collection(
-                    collection_name=settings.collection_name,
+                    collection_name=collection_name,
                     vectors_config=VectorParams(
                         size=settings.embedding_dimension,
                         distance=Distance.COSINE
                     )
                 )
-                logger.info("Created collection", extra={"collection_name": settings.collection_name})
+                logger.info("Created collection", extra={"collection_name": collection_name})
             else:
-                logger.info("Collection already exists", extra={"collection_name": settings.collection_name})
+                logger.info("Collection already exists", extra={"collection_name": collection_name})
             
             return True
             
@@ -65,10 +68,10 @@ class VectorStoreService:
             # Check if the error is specifically about collection already existing
             error_str = str(e).lower()
             if "already exists" in error_str or "conflict" in error_str:
-                logger.info("Collection already exists (from exception)", extra={"collection_name": settings.collection_name})
+                logger.info("Collection already exists (from exception)", extra={"collection_name": collection_name})
                 return True
             else:
-                logger.error("Error creating collection", extra={"error": str(e), "collection_name": settings.collection_name})
+                logger.error("Error creating collection", extra={"error": str(e), "collection_name": collection_name})
                 return False
     
     def initialize_vector_store(self) -> QdrantVectorStore:
@@ -128,5 +131,90 @@ class VectorStoreService:
         except Exception as e:
             logger.error("Error searching documents", extra={"error": str(e), "query": query})
             return []
+    
+    def index_documents(self, documents: List[Document], collection_name: Optional[str] = None) -> bool:
+        """Index documents in specified collection"""
+        if collection_name is None:
+            collection_name = settings.collection_name
+            
+        try:
+            if not self.client:
+                self.initialize_client()
+            
+            # Create vector store for specific collection
+            vector_store = QdrantVectorStore(
+                client=self.client,
+                collection_name=collection_name,
+                embeddings=self.embedding_model
+            )
+            
+            vector_store.add_documents(documents=documents)
+            logger.info("Indexed documents", extra={
+                "document_count": len(documents), 
+                "collection_name": collection_name
+            })
+            return True
+            
+        except Exception as e:
+            logger.error("Error indexing documents", extra={
+                "error": str(e), 
+                "collection_name": collection_name
+            })
+            return False
+    
+    def similarity_search(self, query: str, k: int = 5, collection_name: Optional[str] = None) -> List[Document]:
+        """Search for similar documents in specified collection"""
+        if collection_name is None:
+            collection_name = settings.collection_name
+            
+        try:
+            if not self.client:
+                self.initialize_client()
+            
+            # Create vector store for specific collection
+            vector_store = QdrantVectorStore(
+                client=self.client,
+                collection_name=collection_name,
+                embeddings=self.embedding_model
+            )
+            
+            results = vector_store.similarity_search(query=query, k=k)
+            logger.info("Similarity search completed", extra={
+                "query": query,
+                "results_count": len(results),
+                "collection_name": collection_name
+            })
+            return results
+            
+        except Exception as e:
+            logger.error("Error in similarity search", extra={
+                "error": str(e),
+                "query": query,
+                "collection_name": collection_name
+            })
+            return []
+    
+    def get_collection_info(self, collection_name: Optional[str] = None) -> dict:
+        """Get information about a collection"""
+        if collection_name is None:
+            collection_name = settings.collection_name
+            
+        try:
+            if not self.client:
+                self.initialize_client()
+            
+            info = self.client.get_collection(collection_name)
+            return {
+                "vectors_count": info.vectors_count,
+                "status": info.status,
+                "config": info.config
+            }
+            
+        except Exception as e:
+            logger.error("Error getting collection info", extra={
+                "error": str(e),
+                "collection_name": collection_name
+            })
+            return {}
 
 

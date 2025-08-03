@@ -11,13 +11,18 @@ evaluation:
 
 text_splitting:
   strategy: 'recursive_character'
-  chunk_size: 750
-  chunk_overlap: 0
+  chunk_size: 1200
+  chunk_overlap: 200
   length_function: 'tiktoken'
 
 semantic_splitting:
   buffer_size: 1
   breakpoint_percentile_threshold: 95
+
+# Chunking strategy selection
+chunking:
+  default_strategy: 'semantic'  # 'character' or 'semantic'
+  generate_both_collections: true  # Generate both character and semantic collections
 
 document_loader:
   pdf_loader: 'pymupdf'

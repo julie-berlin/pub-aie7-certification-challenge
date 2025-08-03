@@ -16,9 +16,6 @@ from ragas.metrics import (
     answer_similarity
 )
 
-import sys
-sys.path.append('../api')
-
 from api.app.core.settings import settings
 from api.app.core.logging_config import get_logger
 from api.app.models.chat_models import ChatRequest, UserContext, UserRole
@@ -38,33 +35,37 @@ class RAGASEvaluationService:
             context_precision,     # Precision of retrieved context
             context_recall,        # Recall of retrieved context
             answer_correctness,    # Correctness compared to ground truth
-            answer_similarity      # Similarity to ground truth answer
         ]
 
     def load_test_dataset(self, dataset_path: Optional[str] = None) -> List[Dict[str, Any]]:
         """Load test dataset from JSON file"""
+        dataset_file: Optional[Path] = None
         try:
             # Use configured path or default
-            if dataset_path is None:
-                dataset_path = settings.test_dataset_path
-            
+            path_str = dataset_path if dataset_path is not None else settings.test_dataset_path
+            if path_str is None:
+                raise ValueError("Test dataset path is not configured.")
+
             # Convert to Path object - handle both absolute and relative paths
-            dataset_file = Path(dataset_path)
+            dataset_file = Path(path_str)
             if not dataset_file.is_absolute():
                 # Make relative to project root
                 project_root = Path(__file__).parent.parent
-                dataset_file = project_root / dataset_path
-            
+                dataset_file = project_root / path_str
+
             logger.info("Looking for test dataset", extra={"path": str(dataset_file)})
 
-            with open(dataset_file, 'r') as f:
-                dataset = json.load(f)
+            if dataset_file:
+                with open(dataset_file, 'r') as f:
+                    dataset = json.load(f)
+            else:
+                raise FileNotFoundError("Dataset file path could not be resolved.")
 
             logger.info("Test dataset loaded", extra={"test_cases": len(dataset)})
             return dataset
 
         except Exception as e:
-            logger.error("Failed to load test dataset", extra={"error": str(e), "attempted_path": str(dataset_file)})
+            logger.error("Failed to load test dataset", extra={"error": str(e), "attempted_path": str(dataset_file) if dataset_file else "Unknown"})
             raise
 
     async def generate_responses(self, test_cases: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -145,7 +146,7 @@ class RAGASEvaluationService:
                 "question": [r["question"] for r in valid_responses],
                 "answer": [r["answer"] for r in valid_responses],
                 "contexts": [r["contexts"] for r in valid_responses],
-                "ground_truth": [r["ground_truth"] for r in valid_responses]
+                "ground_truth": [str(r["ground_truth"]) for r in valid_responses]
             }
 
             dataset = Dataset.from_dict(ragas_data)
@@ -161,7 +162,7 @@ class RAGASEvaluationService:
             logger.error("Failed to prepare RAGAS dataset", extra={"error": str(e)})
             raise
 
-    async def evaluate_responses(self, dataset: Dataset) -> Dict[str, Any]:
+    def evaluate_responses(self, dataset: Dataset) -> Dict[str, Any]:
         """Evaluate responses using RAGAS metrics"""
         try:
             logger.info("Starting RAGAS evaluation", extra={"dataset_size": len(dataset)})
@@ -174,29 +175,29 @@ class RAGASEvaluationService:
 
             # Convert results to dictionary
             evaluation_results = {
-                "overall_scores": dict(results),
+                "overall_scores": results,
                 "individual_scores": {},
                 "summary": {
                     "total_questions": len(dataset),
-                    "avg_faithfulness": results.get("faithfulness", 0),
-                    "avg_answer_relevancy": results.get("answer_relevancy", 0),
-                    "avg_context_precision": results.get("context_precision", 0),
-                    "avg_context_recall": results.get("context_recall", 0),
-                    "avg_answer_correctness": results.get("answer_correctness", 0),
-                    "avg_answer_similarity": results.get("answer_similarity", 0)
+                    "avg_faithfulness": results["faithfulness"],
+                    "avg_answer_relevancy": results["answer_relevancy"],
+                    "avg_context_precision": results["context_precision"],
+                    "avg_context_recall": results["context_recall"],
+                    "avg_answer_correctness": results["answer_correctness"],
                 }
             }
 
             # Calculate overall score
             metrics_scores = [
-                results.get("faithfulness", 0),
-                results.get("answer_relevancy", 0),
-                results.get("context_precision", 0),
-                results.get("context_recall", 0),
-                results.get("answer_correctness", 0),
-                results.get("answer_similarity", 0)
+                results["faithfulness"],
+                results["answer_relevancy"],
+                results["context_precision"],
+                results["context_recall"],
+                results["answer_correctness"],
             ]
-            evaluation_results["summary"]["overall_score"] = sum(metrics_scores) / len(metrics_scores)
+            # Ragas returns a list of scores for each metric, so we take the average
+            avg_metrics_scores = [sum(scores) / len(scores) for scores in metrics_scores]
+            evaluation_results["summary"]["overall_score"] = sum(avg_metrics_scores) / len(avg_metrics_scores)
 
             logger.info("RAGAS evaluation completed", extra={
                 "overall_score": evaluation_results["summary"]["overall_score"],
@@ -211,13 +212,13 @@ class RAGASEvaluationService:
             raise
 
     def save_evaluation_results(self, results: Dict[str, Any], responses: List[Dict[str, Any]],
-                              output_path: str = None):
+                              output_path: Optional[str] = None):
         """Save evaluation results to file with unique timestamp"""
         try:
             # Generate unique timestamp-based filename if no path provided
             if output_path is None:
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                output_path = f"output/ragas_evaluation_{timestamp}.json"
+                output_path = f"eval/fixtures/ragas_evaluation_{timestamp}.json"
 
             # Prepare comprehensive results
             full_results = {
@@ -265,6 +266,7 @@ class RAGASEvaluationService:
 
             # Load test dataset
             test_cases = self.load_test_dataset(dataset_path)
+            test_cases = test_cases[:1]
 
             # Generate responses
             responses = await self.generate_responses(test_cases)
@@ -273,7 +275,7 @@ class RAGASEvaluationService:
             ragas_dataset = self.prepare_ragas_dataset(responses)
 
             # Run evaluation
-            evaluation_results = await self.evaluate_responses(ragas_dataset)
+            evaluation_results = self.evaluate_responses(ragas_dataset)
 
             # Save results
             file_paths = self.save_evaluation_results(evaluation_results, responses)

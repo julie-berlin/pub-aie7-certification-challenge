@@ -49,7 +49,9 @@ class AppSettings:
         # Vector Database
         vector_config = config_loader.get_config("vector_database")
         self.qdrant_url = os.getenv("QDRANT_URL", vector_config["qdrant"]["url"])
-        self.collection_name = vector_config["qdrant"]["collection_name"]
+        self.collections = vector_config["qdrant"]["collections"]
+        self.collection_name = self.collections["character_chunks"]  # Default for backward compatibility
+        self.semantic_collection_name = self.collections["semantic_chunks"]
         self.embedding_dimension = vector_config["qdrant"]["embedding_dimension"]
         self.retrieval_top_k = vector_config["retrieval"]["top_k"]
 
@@ -62,6 +64,10 @@ class AppSettings:
         # Semantic Splitting
         self.semantic_buffer_size = data_config["semantic_splitting"]["buffer_size"]
         self.semantic_breakpoint_threshold = data_config["semantic_splitting"]["breakpoint_percentile_threshold"]
+        
+        # Chunking Strategy
+        self.default_chunking_strategy = data_config["chunking"]["default_strategy"]
+        self.generate_both_collections = data_config["chunking"]["generate_both_collections"]
         
         # Evaluation
         self.test_dataset_path = data_config["evaluation"]["test_dataset_path"]

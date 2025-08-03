@@ -19,12 +19,12 @@ import json
 from pathlib import Path
 
 # Add paths
-project_root = Path(__file__).parent.parent
-sys.path.append(str(project_root))
-sys.path.append(str(project_root.parent / "api"))
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(project_root / "api"))
 
 from api.app.core.logging_config import configure_logging, get_logger
-from ragas_evaluation_service import RAGASEvaluationService
+from eval.ragas_evaluation_service import RAGASEvaluationService
 
 
 async def main():
@@ -64,7 +64,6 @@ async def main():
         print(f"   📊 Context Precision:   {summary['avg_context_precision']:.3f}")
         print(f"   📈 Context Recall:      {summary['avg_context_recall']:.3f}")
         print(f"   ✅ Answer Correctness:  {summary['avg_answer_correctness']:.3f}")
-        print(f"   🔗 Answer Similarity:   {summary['avg_answer_similarity']:.3f}")
         print()
 
         # Performance interpretation
@@ -102,11 +101,11 @@ async def main():
         print()
         print("📁 Results saved to:")
         if "file_paths" in results:
-            print(f"   📄 JSON: eval/{results['file_paths']['json_path']}")
-            print(f"   📊 CSV:  eval/{results['file_paths']['csv_path']}")
+            print(f"   📄 JSON: {results['file_paths']['json_path']}")
+            print(f"   📊 CSV:  {results['file_paths']['csv_path']}")
         else:
-            print("   📄 JSON: eval/output/ragas_evaluation_[timestamp].json")
-            print("   📊 CSV:  eval/output/ragas_evaluation_[timestamp].csv")
+            print("   📄 JSON: eval/fixtures/ragas_evaluation_[timestamp].json")
+            print("   📊 CSV:  eval/fixtures/ragas_evaluation_[timestamp].csv")
         print()
 
         # Recommendations

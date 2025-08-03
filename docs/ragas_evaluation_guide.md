@@ -19,7 +19,7 @@ RAGAS is a framework for evaluating RAG (Retrieval-Augmented Generation) applica
 
 ## Test Dataset
 
-The evaluation uses a comprehensive test dataset (`eval/test_dataset.json`) with 12 federal ethics scenarios covering:
+The evaluation uses a comprehensive test dataset (`eval/fixtures/test_dataset.json`) with 12 federal ethics scenarios covering:
 
 - Gift acceptance violations
 - Conflicts of interest

@@ -38,6 +38,7 @@ dependencies = [
     "datasets>=4.0.0",
     "pillow>=11.3.0",
     "langchain-tavily>=0.2.11",
+    "rapidfuzz>=3.0.0",
 ]
 
 [build-system]
