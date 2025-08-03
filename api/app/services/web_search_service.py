@@ -12,7 +12,7 @@ class WebSearchService:
     
     def __init__(self):
         self.search_tool = TavilySearch(
-            api_key=settings.tavily_api_key,
+            tavily_api_key=settings.tavily_api_key,
             max_results=3,
             search_depth="advanced",
             include_domains=["osg.gov", "oge.gov", "ethics.gov", "gsa.gov"]
@@ -37,6 +37,7 @@ class WebSearchService:
         """Perform web search with error handling"""
         try:
             results = self.search_tool.invoke(query)
+            logger.info("Raw search results", extra={"results_type": type(results), "results_content": str(results)[:200]})
             
             # Add search type metadata
             for result in results:
