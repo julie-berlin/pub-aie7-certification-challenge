@@ -11,7 +11,6 @@ dependencies = [
     "pydantic>=2.5.0",
     "pydantic-settings>=2.1.0",
     "python-multipart>=0.0.6",
-    
     # LangChain and AI
     "langchain>=0.1.0",
     "langchain-community>=0.3.26",
@@ -20,24 +19,24 @@ dependencies = [
     "langchain-qdrant>=0.2.0",
     "langgraph>=0.5.0",
     "langsmith>=0.4.4",
-    
     # Vector DB and Search
     "qdrant-client>=1.7.0",
     "tavily-python>=0.3.0",
-    
     # Document Processing
     "pymupdf>=1.26.1",
     "tiktoken>=0.5.2",
-    
     # Utilities
     "python-dotenv>=1.0.0",
     "nest-asyncio>=1.5.8",
     "pandas>=2.3.0",
     "pyyaml>=6.0.0",
-    
     # Jupyter for notebooks
     "jupyter>=1.1.1",
     "ipython>=8.0.0",
+    "ragas>=0.3.0",
+    "datasets>=4.0.0",
+    "pillow>=11.3.0",
+    "langchain-tavily>=0.2.11",
 ]
 
 [build-system]

@@ -1,5 +1,5 @@
 from typing import List, Dict, Any
-from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_tavily import TavilySearch
 
 from ..core.settings import settings
 from ..core.logging_config import get_logger
@@ -11,7 +11,7 @@ class WebSearchService:
     """Service for web search operations using Tavily"""
     
     def __init__(self):
-        self.search_tool = TavilySearchResults(
+        self.search_tool = TavilySearch(
             max_results=3,
             search_depth="advanced",
             include_domains=["osg.gov", "oge.gov", "ethics.gov", "gsa.gov"]
