@@ -101,7 +101,7 @@ A 5-minute video demonstration showcasing the complete system is available, cove
 
 - **Complete Project Details**: [Certification_Challenge.md](./Certification_Challenge.md)
 - **API Documentation**: http://localhost:8000/docs (when running)
-- **Architecture Diagram**: [architecture-diagram.png](./architecture-diagram.png)
+- **Architecture Diagram**: [Diagram](./docs/IntegriBot_Diagram.drawio.png)
 - **Setup Instructions**: Follow Quick Start above or see Docker documentation
 
 ---
