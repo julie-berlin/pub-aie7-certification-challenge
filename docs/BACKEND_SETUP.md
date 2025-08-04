@@ -8,7 +8,7 @@
 
 **Modular Service Design** (no global instances):
 - `PlanningAgentService` - Research strategy with GPT-4o-mini
-- `EthicsAssessmentService` - Comprehensive analysis with GPT-4o  
+- `EthicsAssessmentService` - Comprehensive analysis with GPT-4o
 - `DocumentLoaderService` - PDF loading with tiktoken chunking
 - `VectorStoreService` - Qdrant vector database operations
 - `WebSearchService` - Parallel Tavily web searches
@@ -32,12 +32,13 @@ collect_context → create_plan → retrieve_knowledge
 
 ```
 api/
-├── config/                    # YAML configuration files
-│   ├── application.yaml       # API and security settings
+├── config/                   # YAML configuration files
+│   ├── agentic_workflow.yaml # Workflow parameters
 │   ├── ai_models.yaml        # LLM configuration
-│   ├── vector_database.yaml  # Qdrant settings
+│   ├── application.yaml      # API and security settings
 │   ├── data_processing.yaml  # Document processing
-│   └── agentic_workflow.yaml # Workflow parameters
+│   ├── golden_dataset.yaml   # Test dataset settings
+│   └── vector_database.yaml  # Qdrant settings
 ├── app/
 │   ├── core/
 │   │   ├── config_loader.py  # YAML config loading
@@ -46,25 +47,33 @@ api/
 │   │   ├── chat_models.py    # Pydantic request/response models
 │   │   └── state_models.py   # LangGraph state definitions
 │   ├── services/             # Business logic services
-│   │   ├── planning_agent_service.py
-│   │   ├── ethics_assessment_service.py
+│   │   ├── advanced_retriever_service.py
+│   │   ├── agentic_workflow_service.py
 │   │   ├── document_loader_service.py
+│   │   ├── document_upload_service.py
+│   │   ├── ethics_assessment_service.py
+│   │   ├── planning_agent_service.py
+│   │   ├── startup_service.py
 │   │   ├── vector_store_service.py
-│   │   ├── web_search_service.py
-│   │   └── agentic_workflow_service.py
+│   │   └── web_search_service.py
 │   ├── routers/
-│   │   └── chat_router.py    # API endpoints
+│   │   ├── chat_router.py    # API endpoints
+|   |   └── document_router.py
 │   ├── utils/
 │   │   └── startup_utils.py  # Environment validation
 │   └── main.py               # FastAPI application
 ├── run_server.py             # Server startup script
-└── test_api.py              # API test suite
+└── test_api.py               # API test suite
 ```
 
 ### 🔌 API Endpoints
 
 **Main Endpoints**:
 - `POST /api/chat` - Ethics consultation with full agentic workflow
+- `POST /api/documents/upload` - Add user document
+- `GET /api/documents/list` - Get list of uploaded documents
+- `GET /api/documents/{id}` - Get uploaded document with {id}
+- `DELETE /api/documents/{id}` - Delete a user added document with {id}
 - `GET /api/health` - Service health check with component status
 - `GET /api/ping` - Simple connectivity test
 
@@ -74,7 +83,7 @@ api/
   "question": "Ethics question or scenario",
   "user_context": {
     "role": "federal_employee",
-    "agency": "GSA", 
+    "agency": "GSA",
     "seniority": "GS-14",
     "clearance": "secret"
   },
@@ -120,7 +129,7 @@ uv sync
 **2. Environment Variables** (create `.env.local`):
 ```bash
 OPENAI_API_KEY=your_openai_key
-TAVILY_API_KEY=your_tavily_key  
+TAVILY_API_KEY=your_tavily_key
 LANGCHAIN_API_KEY=your_langsmith_key
 ```
 
@@ -151,35 +160,3 @@ python3 api/test_api.py
 export OPENAI_MODEL="gpt-4o-mini"  # Override default model
 export QDRANT_URL="http://production-qdrant:6333"
 ```
-
-### 🧪 Testing Status
-
-**✅ Completed**:
-- Pydantic model validation
-- Configuration loading
-- Service instantiation  
-- YAML config parsing
-
-**⚠️ Pending**:
-- Full API endpoint testing (requires environment variables)
-- Vector database integration testing  
-- End-to-end workflow validation
-
-### 🎯 Next Steps
-
-1. **Test with real API keys** - Validate full workflow
-2. **Build Next.js frontend** - User interface  
-3. **Docker deployment** - Containerized setup
-4. **RAGAS evaluation** - Performance metrics
-
-### 🏆 Achievement Summary
-
-**Federal Ethics Chatbot Backend - COMPLETE**:
-- ✅ Modular, testable architecture  
-- ✅ Parallel agentic workflow (3x speed)
-- ✅ YAML configuration management
-- ✅ Error handling and validation
-- ✅ Production-ready FastAPI setup
-- ✅ Comprehensive documentation
-
-**Ready for**: Frontend development and Docker deployment

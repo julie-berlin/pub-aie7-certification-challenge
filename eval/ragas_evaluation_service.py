@@ -8,12 +8,12 @@ from datetime import datetime
 
 from ragas import evaluate
 from ragas.metrics import (
-    faithfulness,
-    answer_relevancy,
-    context_precision,
-    context_recall,
-    answer_correctness,
-    answer_similarity
+    Faithfulness,
+    AnswerRelevancy,
+    ContextPrecision,
+    ContextRecall,
+    AnswerCorrectness,
+    AnswerSimilarity
 )
 
 from api.app.core.settings import settings
@@ -30,11 +30,12 @@ class RAGASEvaluationService:
     def __init__(self):
         self.workflow_service = AgenticWorkflowService()
         self.metrics = [
-            faithfulness,          # LLM output faithful to retrieved context
-            answer_relevancy,      # Answer relevancy to the question
-            context_precision,     # Precision of retrieved context
-            context_recall,        # Recall of retrieved context
-            answer_correctness,    # Correctness compared to ground truth
+            Faithfulness,         # LLM output faithful to retrieved context
+            AnswerRelevancy,      # Answer relevancy to the question
+            ContextPrecision,     # Precision of retrieved context
+            ContextRecall,        # Recall of retrieved context
+            AnswerCorrectness,    # Correctness compared to ground truth
+            # AnswerSimilarity,     # Similarity between answer and ground truth
         ]
 
     def load_test_dataset(self, dataset_path: Optional[str] = None) -> List[Dict[str, Any]]:

@@ -31,8 +31,8 @@ class AppSettings:
 
         # AI Settings
         ai_config = config_loader.get_config("ai_models")
-        self.openai_model = ai_config["openai"]["primary_model"]
-        self.planning_model = ai_config["openai"]["planning_model"]
+        self.openai_model = ai_config["openai"]["slim_model"]
+        self.planning_model = ai_config["openai"]["thinking_model"]
         self.embedding_model = ai_config["openai"]["embedding_model"]
         self.temperature = ai_config["openai"]["temperature"]
         self.max_tokens = ai_config["openai"]["max_tokens"]
@@ -62,15 +62,15 @@ class AppSettings:
         self.data_directory = data_config["documents"]["data_directory"]
         self.chunk_size = data_config["text_splitting"]["chunk_size"]
         self.chunk_overlap = data_config["text_splitting"]["chunk_overlap"]
-        
+
         # Semantic Splitting
         self.semantic_buffer_size = data_config["semantic_splitting"]["buffer_size"]
         self.semantic_breakpoint_threshold = data_config["semantic_splitting"]["breakpoint_percentile_threshold"]
-        
+
         # Chunking Strategy
         self.default_chunking_strategy = data_config["chunking"]["default_strategy"]
         self.generate_both_collections = data_config["chunking"]["generate_both_collections"]
-        
+
         # Evaluation
         self.test_dataset_path = data_config["evaluation"]["test_dataset_path"]
 
@@ -87,16 +87,16 @@ class AppSettings:
         self.ragas_generator_model = golden_config["ragas"]["generator_model"]
         self.ragas_generator_temperature = golden_config["ragas"]["generator_temperature"]
         self.ragas_embedding_model = golden_config["ragas"]["embedding_model"]
-        
+
         self.dataset_output_directory = golden_config["dataset"]["output_directory"]
         self.dataset_filename_prefix = golden_config["dataset"]["filename_prefix"]
         self.dataset_include_timestamp = golden_config["dataset"]["include_timestamp"]
-        
+
         self.ground_truth_model = golden_config["ground_truth"]["assessment_model"]
         self.ground_truth_temperature = golden_config["ground_truth"]["assessment_temperature"]
         self.ground_truth_max_tokens = golden_config["ground_truth"]["max_tokens"]
         self.ground_truth_rate_limit_delay = golden_config["ground_truth"]["rate_limit_delay"]
-        
+
         self.user_contexts = golden_config["user_contexts"]
         self.quality_settings = golden_config["quality"]
 

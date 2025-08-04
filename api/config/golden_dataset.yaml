@@ -4,56 +4,56 @@
 ragas:
   testset_size: 10
   document_subset_size: 20
-  generator_model: "gpt-4o-mini"
+  generator_model: 'gpt-4o-mini'
   generator_temperature: 0.3
-  embedding_model: "text-embedding-3-small"
-  
+  embedding_model: 'text-embedding-3-small'
+
 # Dataset creation settings
 dataset:
-  output_directory: "eval/fixtures"
-  filename_prefix: "golden_dataset_kg"
+  output_directory: 'eval/fixtures'
+  filename_prefix: 'golden_dataset'
   include_timestamp: true
-  
+
 # Ground truth generation settings
 ground_truth:
-  assessment_model: "gpt-4o"
+  assessment_model: 'gpt-4o'
   assessment_temperature: 0.1
   max_tokens: 3000
-  rate_limit_delay: 1.0  # seconds between requests
-  
+  rate_limit_delay: 1.0 # seconds between requests
+
 # User context variations for diverse scenarios
 user_contexts:
-  - role: "federal_employee"
-    agency: "GSA"
-    seniority: "GS-12"
-    clearance: "none"
-  - role: "contractor"
-    agency: "DOD"
-    seniority: "senior"
-    clearance: "secret"
-  - role: "federal_employee"
-    agency: "EPA"
-    seniority: "GS-14"
-    clearance: "public_trust"
-  - role: "senior_executive"
-    agency: "Treasury"
-    seniority: "SES"
-    clearance: "top_secret"
-  - role: "procurement_officer"
-    agency: "DHS"
-    seniority: "GS-13"
-    clearance: "secret"
-    
+  - role: 'federal_employee'
+    agency: 'GSA'
+    seniority: 'GS-12'
+    clearance: 'none'
+  - role: 'contractor'
+    agency: 'DOD'
+    seniority: 'senior'
+    clearance: 'secret'
+  - role: 'federal_employee'
+    agency: 'EPA'
+    seniority: 'GS-14'
+    clearance: 'public_trust'
+  - role: 'senior_executive'
+    agency: 'Treasury'
+    seniority: 'SES'
+    clearance: 'top_secret'
+  - role: 'procurement_officer'
+    agency: 'DHS'
+    seniority: 'GS-13'
+    clearance: 'secret'
+
 # Quality control settings
 quality:
   min_question_length: 20
   max_question_length: 500
   min_ground_truth_length: 100
   required_sections:
-    - "Direct Answer"
-    - "Severity Level"
-    - "Legal Foundation"
-    - "Immediate Actions Required"
+    - 'Direct Answer'
+    - 'Severity Level'
+    - 'Legal Foundation'
+    - 'Immediate Actions Required'
 
 # Dataset metadata
 metadata:
