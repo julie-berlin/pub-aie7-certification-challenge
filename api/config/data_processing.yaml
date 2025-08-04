@@ -7,7 +7,7 @@ documents:
     - 'md'
 
 evaluation:
-  test_dataset_path: 'eval/fixtures/test_dataset.json'
+  test_dataset_path: 'eval/fixtures/test_dataset_markdown.json'
 
 text_splitting:
   strategy: 'recursive_character'
@@ -21,8 +21,8 @@ semantic_splitting:
 
 # Chunking strategy selection
 chunking:
-  default_strategy: 'semantic'  # 'character' or 'semantic'
-  generate_both_collections: true  # Generate both character and semantic collections
+  default_strategy: 'character' # 'character' or 'semantic'
+  generate_both_collections: true # Generate both character and semantic collections
 
 document_loader:
   pdf_loader: 'pymupdf'

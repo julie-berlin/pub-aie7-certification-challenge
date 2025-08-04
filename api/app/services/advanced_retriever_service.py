@@ -178,7 +178,7 @@ class AdvancedRetrieverService:
     def retrieve_documents(
         self,
         query: str,
-        strategy: RetrievalStrategy = "hybrid",
+        strategy: RetrievalStrategy = "mmr",
         collection_name: Optional[str] = None,
         top_k: int = 5,
         **strategy_kwargs

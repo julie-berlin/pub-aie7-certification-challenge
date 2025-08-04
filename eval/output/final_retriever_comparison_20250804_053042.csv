@@ -1,4 +1,0 @@
-Strategy,Context Precision,Context Recall,Faithfulness,Answer Relevancy,Overall Score,Key Strength
-Similarity,0.8750,0.1923,0.3309,0.8670,0.5663,Highest precision (0.875)
-Mmr,0.6250,0.6661,0.5625,0.7769,0.6576,Highest recall (0.666)
-Hybrid,0.8000,0.4766,0.4467,0.8220,0.6363,Balances precision and diversity

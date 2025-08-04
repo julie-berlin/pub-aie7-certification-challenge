@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { ChatMessage as ChatMessageType, UserContext } from '@/types'
-import { assessEthicsViolation } from '@/lib/api'
+import { assessEthicsViolation, streamEthicsAssessment } from '@/lib/api'
 import { generateId, cn } from '@/lib/utils'
 import ChatMessage from './ChatMessage'
 import { Send, Loader2, AlertCircle, Bot } from 'lucide-react'
@@ -33,6 +33,7 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
   
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [streamingStatus, setStreamingStatus] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -60,31 +61,77 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
     setMessages(prev => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
+    setStreamingStatus('Initializing...')
     setError(null)
 
+    // Create a placeholder message for the assistant response
+    const assistantMessageId = generateId()
+    const placeholderMessage: ChatMessageType = {
+      id: assistantMessageId,
+      role: 'assistant', 
+      content: '',
+      timestamp: new Date(),
+    }
+    setMessages(prev => [...prev, placeholderMessage])
+
     try {
-      const response = await assessEthicsViolation({
+      const stream = streamEthicsAssessment({
         question: userMessage.content,
         userContext,
       })
 
-      const assistantMessage: ChatMessageType = {
-        id: generateId(),
-        role: 'assistant',
-        content: response.response,
-        timestamp: new Date(),
+      let finalResponse = ''
+
+      for await (const chunk of stream) {
+        if (chunk.status === 'error') {
+          setError(chunk.error || 'An error occurred')
+          break
+        }
+        
+        if (chunk.message) {
+          setStreamingStatus(chunk.message)
+        }
+        
+        if (chunk.status === 'complete' && chunk.response) {
+          finalResponse = chunk.response
+          setStreamingStatus(null)
+          
+          // Update the placeholder message with final response
+          setMessages(prev => prev.map(msg => 
+            msg.id === assistantMessageId 
+              ? { ...msg, content: finalResponse }
+              : msg
+          ))
+          break
+        }
       }
 
-      setMessages(prev => [...prev, assistantMessage])
+      if (!finalResponse) {
+        // Fallback to non-streaming if streaming fails
+        const response = await assessEthicsViolation({
+          question: userMessage.content,
+          userContext,
+        })
 
-      if (response.error) {
-        setError(response.error)
+        setMessages(prev => prev.map(msg => 
+          msg.id === assistantMessageId 
+            ? { ...msg, content: response.response }
+            : msg
+        ))
+
+        if (response.error) {
+          setError(response.error)
+        }
       }
     } catch (err) {
       setError('Failed to get response. Please try again.')
       console.error('Chat error:', err)
+      
+      // Remove placeholder message on error
+      setMessages(prev => prev.filter(msg => msg.id !== assistantMessageId))
     } finally {
       setIsLoading(false)
+      setStreamingStatus(null)
     }
   }
 
@@ -105,7 +152,7 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
           />
         ))}
         
-        {isLoading && (
+        {isLoading && streamingStatus && (
           <div className="flex items-center gap-3 mb-4">
             <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
               <Bot className="w-4 h-4 text-primary-600" />
@@ -114,7 +161,7 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
               <div className="flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
                 <span className="text-sm text-gray-600">
-                  Analyzing your ethics question...
+                  {streamingStatus}
                 </span>
               </div>
             </div>
