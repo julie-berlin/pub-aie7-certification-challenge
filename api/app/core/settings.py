@@ -55,6 +55,7 @@ class AppSettings:
         self.semantic_collection_name = self.collections["semantic_chunks"]
         self.embedding_dimension = vector_config["qdrant"]["embedding_dimension"]
         self.retrieval_top_k = vector_config["retrieval"]["top_k"]
+        self.retrieval_strategy = vector_config["retrieval"]["strategy"]
 
         # Data Processing
         data_config = config_loader.get_config("data_processing")

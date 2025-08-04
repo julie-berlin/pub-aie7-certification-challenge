@@ -1,0 +1,38 @@
+{
+  "evaluation_timestamp": "20250804_053042",
+  "comparison_table": [
+    {
+      "Strategy": "Similarity",
+      "Context Precision": "0.8750",
+      "Context Recall": "0.1923",
+      "Faithfulness": "0.3309",
+      "Answer Relevancy": "0.8670",
+      "Overall Score": "0.5663",
+      "Key Strength": "Highest precision (0.875)"
+    },
+    {
+      "Strategy": "Mmr",
+      "Context Precision": "0.6250",
+      "Context Recall": "0.6661",
+      "Faithfulness": "0.5625",
+      "Answer Relevancy": "0.7769",
+      "Overall Score": "0.6576",
+      "Key Strength": "Highest recall (0.666)"
+    },
+    {
+      "Strategy": "Hybrid",
+      "Context Precision": "0.8000",
+      "Context Recall": "0.4766",
+      "Faithfulness": "0.4467",
+      "Answer Relevancy": "0.8220",
+      "Overall Score": "0.6363",
+      "Key Strength": "Balances precision and diversity"
+    }
+  ],
+  "summary": {
+    "strategies_compared": 3,
+    "best_precision": "Similarity",
+    "best_recall": "Mmr",
+    "best_overall": "Mmr"
+  }
+}

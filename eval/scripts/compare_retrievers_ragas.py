@@ -173,7 +173,7 @@ class RetrieverRAGASEvaluator:
     
     def compare_strategies(
         self,
-        strategies: List[str] = ["similarity", "mmr"],
+        strategies: List[str] = ["similarity", "cohere_rerank", "mmr"],
         top_k: int = 5,
         dataset_path: str = "eval/fixtures/test_dataset_markdown.json"
     ) -> Dict[str, Any]:

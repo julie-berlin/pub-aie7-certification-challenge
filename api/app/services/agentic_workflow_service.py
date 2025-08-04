@@ -6,6 +6,7 @@ from ..models.state_models import ParallelEthicsState
 from ..models.chat_models import UserContext, ChatRequest, ChatResponse, SearchResult
 from .document_loader_service import DocumentLoaderService
 from .vector_store_service import VectorStoreService
+from .advanced_retriever_service import AdvancedRetrieverService
 from .web_search_service import WebSearchService
 from .planning_agent_service import PlanningAgentService
 from .ethics_assessment_service import EthicsAssessmentService
@@ -21,6 +22,7 @@ class AgenticWorkflowService:
         # Initialize all services
         self.document_loader = DocumentLoaderService()
         self.vector_store = VectorStoreService()
+        self.advanced_retriever = AdvancedRetrieverService(self.vector_store)
         self.web_search = WebSearchService()
         self.planning_agent = PlanningAgentService()
         self.ethics_assessor = EthicsAssessmentService()
@@ -93,19 +95,13 @@ class AgenticWorkflowService:
             return {"search_plan": search_plan}
         
         def retrieve_federal_knowledge(state: ParallelEthicsState) -> ParallelEthicsState:
-            """Retrieve relevant federal ethics documents from active collection"""
+            """Retrieve relevant federal ethics documents using advanced retrieval strategy"""
             from ..core.settings import settings
             
-            # Use the active collection based on default strategy
-            if settings.default_chunking_strategy == "semantic":
-                collection_name = settings.semantic_collection_name
-            else:
-                collection_name = settings.collection_name
-                
-            documents = self.vector_store.similarity_search(
-                state["question"], 
-                k=settings.retrieval_top_k,
-                collection_name=collection_name
+            documents = self.advanced_retriever.retrieve_documents(
+                query=state["question"],
+                strategy=settings.retrieval_strategy,
+                top_k=settings.retrieval_top_k
             )
             return {"context": documents}
         

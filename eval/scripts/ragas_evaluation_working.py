@@ -6,6 +6,7 @@ RAGAS evaluation using working retrieval strategies
 import os
 import json
 import pandas as pd
+import cohere
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any
@@ -45,6 +46,9 @@ class WorkingRetrieverEvaluator:
             openai_api_key=settings.openai_api_key
         )
         self.assessment_service = EthicsAssessmentService()
+        
+        # Initialize Cohere client
+        self.cohere_client = cohere.Client(api_key=settings.cohere_api_key)
         
         # RAGAS models
         self.llm = ChatOpenAI(
@@ -106,6 +110,42 @@ class WorkingRetrieverEvaluator:
             Document(page_content=result.payload['page_content'], metadata=result.payload.get('metadata', {}))
             for result in selected
         ]
+    
+    def search_cohere_rerank(self, query: str, k: int = 5, fetch_k: int = 15) -> List[Document]:
+        """Cohere rerank search strategy"""
+        # First, get more candidates using similarity search
+        query_vector = self.embeddings.embed_query(query)
+        
+        results = self.client.search(
+            collection_name="ethics_knowledge_index",
+            query_vector=query_vector,
+            limit=fetch_k
+        )
+        
+        if not results:
+            return []
+        
+        # Prepare documents for reranking
+        documents = [result.payload['page_content'] for result in results]
+        
+        # Use Cohere rerank
+        rerank_response = self.cohere_client.rerank(
+            model="rerank-v3.5",
+            query=query,
+            documents=documents,
+            top_n=k
+        )
+        
+        # Return reranked documents
+        reranked_docs = []
+        for result in rerank_response.results:
+            original_result = results[result.index]
+            reranked_docs.append(Document(
+                page_content=original_result.payload['page_content'],
+                metadata=original_result.payload.get('metadata', {})
+            ))
+        
+        return reranked_docs
     
     def load_test_dataset(self) -> List[Dict]:
         """Load test dataset"""
@@ -231,9 +271,16 @@ class WorkingRetrieverEvaluator:
             test_scenarios
         )
         
+        # Cohere rerank search
+        results["cohere_rerank"] = self.evaluate_strategy(
+            "cohere_rerank",
+            self.search_cohere_rerank,
+            test_scenarios
+        )
+        
         return {
             "evaluation_timestamp": datetime.now().isoformat(),
-            "strategies_compared": ["similarity", "mmr"],
+            "strategies_compared": ["similarity", "mmr", "cohere_rerank"],
             "dataset_size": len(test_scenarios),
             "results": results
         }
