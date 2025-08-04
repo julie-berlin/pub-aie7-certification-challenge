@@ -41,6 +41,7 @@ class AppSettings:
         self.openai_api_key = config_loader.get_env_or_config("OPENAI_API_KEY", "")
         self.tavily_api_key = config_loader.get_env_or_config("TAVILY_API_KEY", "")
         self.langchain_api_key = config_loader.get_env_or_config("LANGCHAIN_API_KEY", "")
+        self.cohere_api_key = config_loader.get_env_or_config("COHERE_API_KEY", "")
 
         # LangSmith
         self.langchain_tracing = ai_config["langchain"]["tracing_enabled"]
