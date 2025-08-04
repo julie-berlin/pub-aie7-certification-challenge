@@ -4,6 +4,9 @@ from typing import Optional
 from ..models.chat_models import ChatRequest, ChatResponse, HealthResponse
 from ..services.agentic_workflow_service import AgenticWorkflowService
 from ..core.settings import settings
+from ..core.logging_config import get_logger
+
+logger = get_logger("app.api.chat")
 
 router = APIRouter(prefix="/api", tags=["chat"])
 
@@ -25,10 +28,26 @@ async def ethics_consultation(
     - **user_context**: Optional user context (role, agency, clearance)
     """
     try:
+        logger.info("Processing ethics consultation", extra={
+            "question_length": len(request.question),
+            "has_user_context": request.user_context is not None
+        })
+        
         response = workflow_service.process_ethics_consultation(request)
+        
+        logger.info("Ethics consultation completed", extra={
+            "processing_time": response.processing_time_seconds,
+            "federal_sources": response.federal_law_sources,
+            "web_sources": response.web_sources
+        })
+        
         return response
         
     except Exception as e:
+        logger.error("Error processing ethics consultation", extra={
+            "error": str(e),
+            "question_length": len(request.question)
+        })
         raise HTTPException(
             status_code=500, 
             detail=f"Error processing ethics consultation: {str(e)}"
@@ -74,10 +93,10 @@ async def assess_ethics_violation(
     try:
         response = workflow_service.process_ethics_consultation(request)
         
-        # Debug logging
-        print(f"🔍 Response assessment exists: {response.assessment is not None}")
-        if response.assessment:
-            print(f"🔍 Assessment type: {type(response.assessment)}")
+        logger.debug("Assessment response details", extra={
+            "assessment_exists": response.assessment is not None,
+            "assessment_type": type(response.assessment).__name__ if response.assessment else None
+        })
         
         # Transform to match frontend expectations
         return {

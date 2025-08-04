@@ -9,6 +9,9 @@ from .vector_store_service import VectorStoreService
 from .web_search_service import WebSearchService
 from .planning_agent_service import PlanningAgentService
 from .ethics_assessment_service import EthicsAssessmentService
+from ..core.logging_config import get_logger
+
+logger = get_logger("app.services.agentic_workflow")
 
 
 class AgenticWorkflowService:
@@ -38,12 +41,12 @@ class AgenticWorkflowService:
                 # Initialize vector store and add documents
                 self.vector_store.initialize_vector_store()
                 self.vector_store.add_documents(documents)
-                print("✅ Knowledge base initialized successfully")
+                logger.info("Knowledge base initialized successfully", extra={"document_count": len(documents)})
             else:
-                print("⚠️ No documents loaded - using empty knowledge base")
+                logger.warning("No documents loaded - using empty knowledge base")
                 
         except Exception as e:
-            print(f"❌ Error initializing knowledge base: {e}")
+            logger.error("Error initializing knowledge base", extra={"error": str(e)})
     
     def _build_workflow_graph(self) -> StateGraph:
         """Build the parallel agentic workflow graph"""
@@ -99,7 +102,7 @@ class AgenticWorkflowService:
             guidance_results = str(state.get("guidance_web_results", []))
             
             # Generate structured assessment
-            print("🔍 Generating structured assessment...")
+            logger.info("Generating structured assessment", extra={"question_length": len(state["question"])})
             assessment = self.ethics_assessor.assess_ethics_scenario_structured(
                 question=state["question"],
                 search_plan=state.get("search_plan", ""),
@@ -109,7 +112,7 @@ class AgenticWorkflowService:
                 penalty_results=penalty_results,
                 guidance_results=guidance_results
             )
-            print(f"✅ Assessment generated: {assessment.simplified.direct_answer[:100]}...")
+            logger.info("Assessment generated successfully", extra={"direct_answer_preview": assessment.simplified.direct_answer[:100]})
             
             # Also generate traditional response for backward compatibility
             response = self.ethics_assessor.assess_ethics_scenario(
@@ -219,7 +222,7 @@ class AgenticWorkflowService:
             return response
             
         except Exception as e:
-            print(f"❌ Error in agentic workflow: {e}")
+            logger.error("Error in agentic workflow", extra={"error": str(e), "question": request.question})
             return ChatResponse(
                 question=request.question,
                 response=f"I apologize, but I encountered an error processing your ethics consultation: {str(e)}",
