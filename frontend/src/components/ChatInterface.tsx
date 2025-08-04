@@ -73,7 +73,6 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
         role: 'assistant',
         content: response.response,
         timestamp: new Date(),
-        assessment: response.assessment,
       }
 
       setMessages(prev => [...prev, assistantMessage])
@@ -103,7 +102,6 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
           <ChatMessage 
             key={message.id} 
             message={message} 
-            assessment={message.assessment}
           />
         ))}
         

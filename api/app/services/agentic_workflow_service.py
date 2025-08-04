@@ -3,9 +3,10 @@ from typing import Dict, Any, List
 from langgraph.graph import START, StateGraph
 
 from ..models.state_models import ParallelEthicsState
-from ..models.chat_models import UserContext, ChatRequest, ChatResponse, SearchResult, EthicsAssessment
+from ..models.chat_models import UserContext, ChatRequest, ChatResponse, SearchResult
 from .document_loader_service import DocumentLoaderService
 from .vector_store_service import VectorStoreService
+from .advanced_retriever_service import AdvancedRetrieverService
 from .web_search_service import WebSearchService
 from .planning_agent_service import PlanningAgentService
 from .ethics_assessment_service import EthicsAssessmentService
@@ -21,6 +22,7 @@ class AgenticWorkflowService:
         # Initialize all services
         self.document_loader = DocumentLoaderService()
         self.vector_store = VectorStoreService()
+        self.advanced_retriever = AdvancedRetrieverService(self.vector_store)
         self.web_search = WebSearchService()
         self.planning_agent = PlanningAgentService()
         self.ethics_assessor = EthicsAssessmentService()
@@ -93,19 +95,13 @@ class AgenticWorkflowService:
             return {"search_plan": search_plan}
         
         def retrieve_federal_knowledge(state: ParallelEthicsState) -> ParallelEthicsState:
-            """Retrieve relevant federal ethics documents from active collection"""
+            """Retrieve relevant federal ethics documents using advanced retrieval strategy"""
             from ..core.settings import settings
             
-            # Use the active collection based on default strategy
-            if settings.default_chunking_strategy == "semantic":
-                collection_name = settings.semantic_collection_name
-            else:
-                collection_name = settings.collection_name
-                
-            documents = self.vector_store.similarity_search(
-                state["question"], 
-                k=settings.retrieval_top_k,
-                collection_name=collection_name
+            documents = self.advanced_retriever.retrieve_documents(
+                query=state["question"],
+                strategy=settings.retrieval_strategy,
+                top_k=settings.retrieval_top_k
             )
             return {"context": documents}
         
@@ -141,9 +137,9 @@ class AgenticWorkflowService:
             penalty_results = str(state.get("penalty_web_results", []))
             guidance_results = str(state.get("guidance_web_results", []))
             
-            # Generate structured assessment
-            logger.info("Generating structured assessment", extra={"question_length": len(state["question"])})
-            assessment = self.ethics_assessor.assess_ethics_scenario_structured(
+            # Generate markdown assessment
+            logger.info("Generating markdown assessment", extra={"question_length": len(state["question"])})
+            assessment = self.ethics_assessor.assess_ethics_scenario(
                 question=state["question"],
                 search_plan=state.get("search_plan", ""),
                 user_context=state.get("user_context", {}),
@@ -152,20 +148,9 @@ class AgenticWorkflowService:
                 penalty_results=penalty_results,
                 guidance_results=guidance_results
             )
-            logger.info("Assessment generated successfully", extra={"direct_answer_preview": assessment.simplified.direct_answer[:100]})
+            logger.info("Assessment generated successfully", extra={"assessment_length": len(assessment)})
             
-            # Also generate traditional response for backward compatibility
-            response = self.ethics_assessor.assess_ethics_scenario(
-                question=state["question"],
-                search_plan=state.get("search_plan", ""),
-                user_context=state.get("user_context", {}),
-                federal_context=federal_context,
-                general_results=general_results,
-                penalty_results=penalty_results,
-                guidance_results=guidance_results
-            )
-            
-            return {"response": response, "assessment": assessment}
+            return {"response": assessment}
         
         def finalize_response(state: ParallelEthicsState) -> ParallelEthicsState:
             """Finalize response and calculate processing time"""
@@ -227,7 +212,6 @@ class AgenticWorkflowService:
                 "penalty_web_results": [],
                 "guidance_web_results": [],
                 "web_results": [],
-                "assessment": "",
                 "response": "",
                 "processing_start_time": start_time,
                 "processing_time_seconds": None
@@ -251,7 +235,6 @@ class AgenticWorkflowService:
             response = ChatResponse(
                 question=request.question,
                 response=final_state.get("response", ""),
-                assessment=final_state.get("assessment"),
                 federal_law_sources=len(final_state.get("context", [])),
                 web_sources=len(final_state.get("web_results", [])),
                 search_results=search_results,

@@ -1,0 +1,13 @@
+{
+  "timestamp": "20250804_052720",
+  "results": {
+    "similarity": {
+      "strategy": "similarity",
+      "error": "No retrievals"
+    },
+    "mmr": {
+      "strategy": "mmr",
+      "error": "No retrievals"
+    }
+  }
+}

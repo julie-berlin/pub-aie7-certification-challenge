@@ -1,21 +1,22 @@
 # Federal Ethics Chatbot - Development Plan
 
-## Current Status: Full-Stack Application Complete ✅
+## Current Status: Certification Challenge - Final Day (Aug 4, 2025) 🏁
 
 **COMPLETED**:
-- ✅ Basic POC notebook with agentic RAG system  
-- ✅ Enhanced notebook with planning agent (reflection removed for production)
-- ✅ Parallel web search optimization (3x speed improvement)
-- ✅ Multi-model approach (GPT-4o + GPT-4o-mini for planning)
-- ✅ User context collection and personalized guidance
-- ✅ FastAPI backend with streamlined agentic workflow
-- ✅ Next.js frontend (IntegriBot) with full chat interface
-- ✅ Document upload functionality with vector store integration
-- ✅ Simplified assessment response format with expandable detailed sections
-- ✅ Document loading and Qdrant integration fixes for Docker deployment
-- ✅ Production-ready architecture without reflection overhead
+- ✅ Full-stack application (FastAPI backend + Next.js frontend)
+- ✅ Docker deployment with Qdrant integration
+- ✅ Document upload and management system
+- ✅ Simplified assessment UI with expandable detailed analysis
+- ✅ Agentic workflow with parallel web search
+- ✅ Basic RAGAS evaluation framework (partial - times out)
+- ✅ Initial retriever comparison (similarity vs MMR)
 
-**READY FOR**: Docker deployment and evaluation framework
+**CRITICAL TODAY**: Complete certification requirements
+- ❌ Fix RAGAS timeout issues and Cohere rerank integration
+- ❌ Complete retriever strategy comparison and documentation
+- ❌ Update production system with optimal retriever
+- ❌ Add response streaming and test document upload
+- ❌ Final documentation of technical choices
 
 ## Architecture Improvements Made
 
@@ -108,27 +109,38 @@ Frontend (IntegriBot)     Backend (FastAPI)        AI Workflow
   - [x] Added document management UI with listing and deletion capabilities
   - [x] Implemented file validation (PDF only, 50MB limit) and metadata tracking
 
-#### **Day 2-3 (Aug 2-3): Evaluation & Testing**
-- [ ] **RAGAS evaluation implementation**
-  - [ ] Create synthetic test dataset (50 scenarios)
-  - [ ] Implement RAGAS metrics (faithfulness, relevance, precision, recall)
-  - [ ] Run baseline evaluation with parallel system
-- [ ] **Advanced retrieval for Task 6**
-  - [ ] Experiment with alternative chunking strategies including voyage-context-3 embedding model
-  - [ ] Compare chunking approaches: recursive character splitting vs semantic chunking vs contextual chunking
-  - [ ] Implement semantic reranking or hybrid search
-  - [ ] Compare performance vs baseline system
-  - [ ] Document results in evaluation tables
+#### **EVALUATION STATUS (Aug 2-3) - PARTIALLY COMPLETE**
+- [x] **RAGAS evaluation framework created** ✅
+  - [x] Basic test dataset implemented (2 scenarios initially)
+  - [x] RAGAS metrics integration (faithfulness, relevance, precision, recall)
+  - ❌ **CRITICAL ISSUE**: Evaluation times out, needs optimization
+- [x] **Retriever comparison started** ✅
+  - [x] Similarity search baseline (context_precision: 0.875, faithfulness: 0.331)
+  - [x] MMR strategy tested (context_precision: 0.625, faithfulness: 0.563)
+  - ❌ **BLOCKER**: Cohere rerank strategy fails to complete
+  - [ ] Need to consolidate test files from root to eval/ directory
 
-#### **Day 4 (Aug 4): Final Deliverables**
-- [ ] **Performance comparison and documentation**
-  - [ ] Run final RAGAS evaluation comparing approaches
-  - [ ] Create results tables and analysis
-  - [ ] Document system architecture and decisions
-- [ ] **Demo preparation**  
-  - [ ] Record 5-minute demo video
-  - [ ] Test complete system functionality
-  - [ ] Prepare final GitHub repository
+#### **DAY 4 (Aug 4) - FINAL CERTIFICATION DAY** 🎯
+**MORNING PRIORITIES (8AM-12PM)**:
+- [ ] **Fix RAGAS timeout issues**
+  - [ ] Optimize evaluation script to prevent timeouts
+  - [ ] Debug and fix Cohere rerank integration
+  - [ ] Run complete retriever comparison (naive, mmr, rerank)
+- [ ] **Complete retriever optimization**
+  - [ ] Document performance results from all strategies
+  - [ ] Select optimal retriever based on RAGAS scores
+  - [ ] Update backend service to use best strategy
+
+**AFTERNOON PRIORITIES (12PM-6PM)**:
+- [ ] **System refinements**
+  - [ ] Add streaming responses to frontend
+  - [ ] Test document upload end-to-end functionality
+  - [ ] Consolidate evaluation code into eval/ directory
+- [ ] **Final documentation**
+  - [ ] Document all technical choices and reasoning
+  - [ ] Update architecture documentation
+  - [ ] Create performance comparison tables
+  - [ ] Prepare certification deliverables
 
 ---
 

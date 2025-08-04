@@ -11,6 +11,7 @@ retrieval:
   top_k: 5
   score_threshold: 0.7
   rerank_enabled: false
+  strategy: "mmr"  # Options: similarity, mmr, hybrid, cohere_rerank
 
 indexing:
   batch_size: 100

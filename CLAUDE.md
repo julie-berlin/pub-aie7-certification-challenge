@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # Federal Ethics Compliance Chatbot - Project Memory
 
 ## Project Overview
@@ -24,12 +28,20 @@
 - **Secondary**: Real-time web search for current guidance and precedents
 - **Domains**: osg.gov, oge.gov, ethics.gov, gsa.gov (filtered for reliability)
 
-### Agentic Workflow
+### Service Architecture
+- **FastAPI Backend** (`api/app/`) - RESTful API with structured logging
+- **Next.js Frontend** (`frontend/`) - TypeScript React app with Tailwind CSS
+- **LangGraph Workflow** - Parallel agentic reasoning with state management
+- **Vector Store Service** - Qdrant integration with dual collection strategy
+- **Document Processing** - PyMuPDF + tiktoken chunking (750 chars)
+- **Web Search Service** - Tavily integration with government domain filtering
+
+### Agentic Workflow (LangGraph State Machine)
 1. **User Context Collection** - Role, industry, seniority level
-2. **Question Analysis** - Ethics violation identification
-3. **Knowledge Retrieval** - Federal law RAG search
+2. **Question Analysis** - Ethics violation identification  
+3. **Knowledge Retrieval** - Federal law RAG search (parallel character + semantic)
 4. **Search Planning** - Targeted web query formulation
-5. **Web Research** - Current guidance and cases
+5. **Web Research** - Current guidance and cases (parallel searches)
 6. **Violation Analysis** - Specific law identification and factors
 7. **Severity Assessment** - Minor/moderate/serious classification
 8. **Penalty Research** - Criminal, civil, administrative consequences
@@ -51,22 +63,52 @@
 ### Setup
 ```bash
 uv sync  # Install dependencies
-docker-compose up  # Start services (when implemented)
+cp .env .env.local  # Copy environment template
+# Edit .env.local with API keys (OpenAI, Tavily, LangSmith)
+```
+
+### Local Development (Docker Compose)
+```bash
+# Full stack development
+docker-compose up --build
+
+# Backend only
+docker-compose up backend qdrant
+
+# Individual services
+docker-compose up qdrant  # Vector database only
+```
+
+### Alternative Local Development
+```bash
+# Backend (FastAPI) - if not using Docker
+python3 start_backend.py
+
+# Frontend (Next.js) - if not using Docker
+command cd frontend && npm run dev
 ```
 
 ### Testing
 ```bash
-python3 -m pytest tests/  # Unit tests (when implemented)
-jupyter notebook docs/poc_app.ipynb  # Run POC
+# API testing
+python3 api/test_api.py
+
+# Frontend
+command cd frontend && npm run type-check
+command cd frontend && npm run lint
+
+# Unit tests (when implemented)
+python3 -m pytest tests/
 ```
 
 ### Evaluation
 ```bash
-# RAGAS evaluation (when implemented)
-python3 scripts/evaluate_ragas.py
+# RAGAS evaluation
+python3 eval/scripts/run_ragas_evaluation.py
 
-# LangSmith testing (when implemented)
-python3 scripts/langsmith_eval.py
+# Notebooks
+jupyter notebook docs/poc_app.ipynb
+jupyter notebook docs/enhanced_agentic_app.ipynb
 ```
 
 ## Current Status

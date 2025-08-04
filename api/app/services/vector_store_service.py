@@ -28,7 +28,7 @@ class VectorStoreService:
             if settings.qdrant_url == "memory":
                 self.client = QdrantClient(":memory:")
             else:
-                self.client = QdrantClient(url=settings.qdrant_url)
+                self.client = QdrantClient(url=settings.qdrant_url, prefer_grpc=False, check_compatibility=False)
             
             logger.info("Connected to Qdrant", extra={"qdrant_url": settings.qdrant_url})
             return self.client

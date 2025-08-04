@@ -86,10 +86,7 @@ class EthicsAssessment(BaseModel):
 class ChatResponse(BaseModel):
     """Response model for ethics chat consultation"""
     question: str
-    response: str = Field(..., description="Comprehensive ethics guidance")
-
-    # Optional structured assessment
-    assessment: Optional[EthicsAssessment] = None
+    response: str = Field(..., description="Comprehensive ethics guidance in markdown format")
 
     # Source information
     federal_law_sources: int = Field(0, description="Number of federal law chunks used")
