@@ -46,7 +46,7 @@ class SearchResult(BaseModel):
 class SeverityLevel(str, Enum):
     """Ethics violation severity levels"""
     MINOR = "minor"
-    MODERATE = "moderate" 
+    MODERATE = "moderate"
     SERIOUS = "serious"
     NO_VIOLATION = "no_violation"
 
@@ -70,10 +70,10 @@ class EthicsAssessment(BaseModel):
     """Complete structured ethics assessment response"""
     # Simplified view
     simplified: SimplifiedAssessment
-    
+
     # Detailed expandable aspects
     detailed_aspects: List[DetailedAspect] = Field(default_factory=list)
-    
+
     # Legacy fields (kept for compatibility)
     violation_type: Optional[str] = Field(None, description="Type of potential violation")
     severity_level: Optional[str] = Field(None, description="Minor, moderate, or serious")
@@ -87,16 +87,15 @@ class ChatResponse(BaseModel):
     """Response model for ethics chat consultation"""
     question: str
     response: str = Field(..., description="Comprehensive ethics guidance")
-    
+
     # Optional structured assessment
     assessment: Optional[EthicsAssessment] = None
-    
-    
+
     # Source information
     federal_law_sources: int = Field(0, description="Number of federal law chunks used")
     web_sources: int = Field(0, description="Number of web sources consulted")
     search_results: List[SearchResult] = Field(default_factory=list)
-    
+
     # Processing metadata
     processing_time_seconds: Optional[float] = None
     search_plan: Optional[str] = Field(None, description="Research strategy used")

@@ -1,20 +1,30 @@
 # Data processing configuration
 documents:
-  data_directory: "/app/data"
-  ethics_pdf_filename: "Compilation of Federal Ethics Laws (2025).pdf"
+  data_directory: 'data'
   supported_formats:
-    - "pdf"
-    - "txt"
-    - "md"
+    - 'pdf'
+    - 'txt'
+    - 'md'
+
+evaluation:
+  test_dataset_path: 'eval/fixtures/test_dataset.json'
 
 text_splitting:
-  strategy: "recursive_character" 
-  chunk_size: 750
-  chunk_overlap: 0
-  length_function: "tiktoken"
-  tiktoken_model: "gpt-4o"
+  strategy: 'recursive_character'
+  chunk_size: 1200
+  chunk_overlap: 200
+  length_function: 'tiktoken'
+
+semantic_splitting:
+  buffer_size: 1
+  breakpoint_percentile_threshold: 95
+
+# Chunking strategy selection
+chunking:
+  default_strategy: 'semantic'  # 'character' or 'semantic'
+  generate_both_collections: true  # Generate both character and semantic collections
 
 document_loader:
-  pdf_loader: "pymupdf"
+  pdf_loader: 'pymupdf'
   extract_images: false
   extract_tables: true

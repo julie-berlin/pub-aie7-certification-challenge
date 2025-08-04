@@ -1,21 +1,21 @@
 # AI model configuration
 openai:
-  primary_model: "gpt-4o"
-  planning_model: "gpt-4o-mini"
-  embedding_model: "text-embedding-3-small"
+  primary_model: 'gpt-4o'
+  planning_model: 'gpt-4o-mini'
+  embedding_model: 'text-embedding-3-small'
   temperature: 0.1
   max_tokens: 2000
 
 langchain:
   tracing_enabled: true
-  project_name: "federal-ethics-chatbot"
+  project_name: 'federal-ethics-chatbot'
 
 web_search:
-  provider: "tavily"
+  provider: 'tavily'
   max_results: 3
-  search_depth: "advanced"
+  search_depth: 'advanced'
   government_domains:
-    - "osg.gov"
-    - "oge.gov"
-    - "ethics.gov"
-    - "gsa.gov"
+    - 'osg.gov'
+    - 'oge.gov'
+    - 'ethics.gov'
+    - 'gsa.gov'

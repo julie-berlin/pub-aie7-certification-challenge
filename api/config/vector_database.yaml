@@ -1,7 +1,9 @@
 # Vector database configuration
 qdrant:
-  url: "http://qdrant:6333"
-  collection_name: "ethics_knowledge_index"
+  url: "memory"  # Default to in-memory, override with QDRANT_URL env var
+  collections:
+    character_chunks: "ethics_knowledge_index"  # Original character-based chunks
+    semantic_chunks: "ethics_semantic_index"    # New semantic chunks
   embedding_dimension: 1536
   distance_metric: "cosine"
 

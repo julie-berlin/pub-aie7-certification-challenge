@@ -32,18 +32,46 @@ class AgenticWorkflowService:
         self.workflow_graph = self._build_workflow_graph()
     
     def _initialize_knowledge_base(self):
-        """Load ethics documents into vector store"""
+        """Load ethics documents into vector store collections"""
         try:
-            # Load and split documents
-            documents = self.document_loader.load_and_split_documents()
+            from ..core.settings import settings
             
-            if documents:
-                # Initialize vector store and add documents
-                self.vector_store.initialize_vector_store()
-                self.vector_store.add_documents(documents)
-                logger.info("Knowledge base initialized successfully", extra={"document_count": len(documents)})
-            else:
+            # Load base documents
+            base_documents = self.document_loader.load_ethics_documents()
+            
+            if not base_documents:
                 logger.warning("No documents loaded - using empty knowledge base")
+                return
+            
+            # Initialize collections based on settings
+            if settings.generate_both_collections:
+                logger.info("Initializing both character and semantic collections")
+                
+                # Character-based collection
+                char_chunks = self.document_loader.split_documents(base_documents)
+                self.vector_store.create_collection(settings.collection_name)
+                self.vector_store.index_documents(char_chunks, settings.collection_name)
+                logger.info("Character collection initialized", extra={"document_count": len(char_chunks)})
+                
+                # Semantic collection
+                semantic_chunks = self.document_loader.semantic_split_documents(base_documents)
+                self.vector_store.create_collection(settings.semantic_collection_name)
+                self.vector_store.index_documents(semantic_chunks, settings.semantic_collection_name)
+                logger.info("Semantic collection initialized", extra={"document_count": len(semantic_chunks)})
+                
+            else:
+                # Use default strategy
+                if settings.default_chunking_strategy == "semantic":
+                    chunks = self.document_loader.load_and_semantic_split_documents()
+                    collection_name = settings.semantic_collection_name
+                else:
+                    chunks = self.document_loader.load_and_split_documents()
+                    collection_name = settings.collection_name
+                
+                self.vector_store.create_collection(collection_name)
+                self.vector_store.index_documents(chunks, collection_name)
+                logger.info(f"Knowledge base initialized with {settings.default_chunking_strategy} chunking", 
+                           extra={"document_count": len(chunks), "collection": collection_name})
                 
         except Exception as e:
             logger.error("Error initializing knowledge base", extra={"error": str(e)})
@@ -65,8 +93,20 @@ class AgenticWorkflowService:
             return {"search_plan": search_plan}
         
         def retrieve_federal_knowledge(state: ParallelEthicsState) -> ParallelEthicsState:
-            """Retrieve relevant federal ethics documents"""
-            documents = self.vector_store.search_similar_documents(state["question"])
+            """Retrieve relevant federal ethics documents from active collection"""
+            from ..core.settings import settings
+            
+            # Use the active collection based on default strategy
+            if settings.default_chunking_strategy == "semantic":
+                collection_name = settings.semantic_collection_name
+            else:
+                collection_name = settings.collection_name
+                
+            documents = self.vector_store.similarity_search(
+                state["question"], 
+                k=settings.retrieval_top_k,
+                collection_name=collection_name
+            )
             return {"context": documents}
         
         def search_general_guidance(state: ParallelEthicsState) -> ParallelEthicsState:

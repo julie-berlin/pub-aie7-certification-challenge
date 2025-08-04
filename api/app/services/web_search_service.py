@@ -1,5 +1,5 @@
 from typing import List, Dict, Any
-from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_tavily import TavilySearch
 
 from ..core.settings import settings
 from ..core.logging_config import get_logger
@@ -11,7 +11,8 @@ class WebSearchService:
     """Service for web search operations using Tavily"""
     
     def __init__(self):
-        self.search_tool = TavilySearchResults(
+        self.search_tool = TavilySearch(
+            tavily_api_key=settings.tavily_api_key,
             max_results=3,
             search_depth="advanced",
             include_domains=["osg.gov", "oge.gov", "ethics.gov", "gsa.gov"]
@@ -35,7 +36,15 @@ class WebSearchService:
     def _perform_search(self, query: str, search_type: str) -> List[Dict[str, Any]]:
         """Perform web search with error handling"""
         try:
-            results = self.search_tool.invoke(query)
+            raw_results = self.search_tool.invoke(query)
+            logger.info("Raw search results", extra={"results_type": type(raw_results), "results_content": str(raw_results)[:200]})
+            
+            # Extract results list from Tavily response
+            if isinstance(raw_results, dict) and 'results' in raw_results:
+                results = raw_results['results']
+            else:
+                # Handle case where results is already a list
+                results = raw_results if isinstance(raw_results, list) else []
             
             # Add search type metadata
             for result in results:
@@ -46,7 +55,12 @@ class WebSearchService:
             return results
             
         except Exception as e:
-            logger.warning("Web search failed", extra={"search_type": search_type, "error": str(e), "query": query})
+            logger.error("Web search failed", extra={
+                "search_type": search_type, 
+                "error": str(e),
+                "error_type": type(e).__name__,
+                "query": query
+            })
             return []
     
     def search_all_parallel(self, question: str) -> Dict[str, List[Dict[str, Any]]]:

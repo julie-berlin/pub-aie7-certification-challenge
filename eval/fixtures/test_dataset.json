@@ -1,0 +1,146 @@
+[
+  {
+    "question": "Can I accept a gift worth $25 from a contractor my agency works with?",
+    "user_context": {
+      "role": "federal_employee",
+      "agency": "GSA",
+      "seniority": "GS-12"
+    },
+    "ground_truth": "No, you cannot accept a gift worth $25 from a contractor your agency works with. Under federal ethics rules, you generally cannot accept gifts from prohibited sources, which includes contractors who do business with your agency. The $20 de minimis exception does not apply because $25 exceeds the threshold, and contractors are prohibited sources regardless of the gift value.",
+    "expected_violations": ["Gift acceptance from prohibited source", "5 CFR 2635.202"],
+    "expected_severity": "moderate",
+    "expected_actions": ["Decline the gift", "Report the offer to ethics official", "Document the incident"]
+  },
+  {
+    "question": "I work for the Department of Defense and my spouse wants to apply for a job at a defense contractor. Is this allowed?",
+    "user_context": {
+      "role": "federal_employee", 
+      "agency": "DOD",
+      "seniority": "GS-14"
+    },
+    "ground_truth": "Your spouse may apply for a job at a defense contractor, but you must take steps to avoid conflicts of interest. You should recuse yourself from any matters involving that contractor, notify your supervisor and ethics official, and follow your agency's procedures for managing potential conflicts. The employment itself is not prohibited, but you must ensure it doesn't create conflicts with your federal duties.",
+    "expected_violations": ["Potential conflict of interest", "5 CFR 2635.502"],
+    "expected_severity": "minor",
+    "expected_actions": ["Notify supervisor", "Recuse from matters involving contractor", "Consult ethics official"]
+  },
+  {
+    "question": "Can I use my government computer to check my personal email during lunch break?",
+    "user_context": {
+      "role": "federal_employee",
+      "agency": "EPA", 
+      "seniority": "GS-9"
+    },
+    "ground_truth": "Generally, you should not use government computers for personal activities, even during lunch breaks. Government resources should be used for official purposes only. Some agencies may have limited policies allowing minimal personal use during breaks, but you should check your specific agency's computer use policy. The safest approach is to use your personal device for personal email.",
+    "expected_violations": ["Misuse of government property", "5 CFR 2635.704"],
+    "expected_severity": "minor", 
+    "expected_actions": ["Check agency computer use policy", "Use personal device instead", "Avoid personal use of government equipment"]
+  },
+  {
+    "question": "A company offered me a consulting job that would pay $50,000 for work I'd do on weekends. Can I accept this?",
+    "user_context": {
+      "role": "federal_employee",
+      "agency": "Treasury",
+      "seniority": "GS-15"
+    },
+    "ground_truth": "You cannot accept outside employment without prior approval from your agency's ethics office. As a federal employee, you must request permission for any outside employment or business activities. The ethics office will review whether the consulting work would conflict with your official duties, involve prohibited sources, or violate other ethics rules. You must receive written approval before beginning any outside work.",
+    "expected_violations": ["Outside employment without approval", "5 CFR 2635.803"],
+    "expected_severity": "serious",
+    "expected_actions": ["Seek ethics office approval", "Do not start work until approved", "Disclose all relevant details"]
+  },
+  {
+    "question": "I attended a conference where meals were provided by the host organization. Do I need to report this?",
+    "user_context": {
+      "role": "federal_employee",
+      "agency": "HHS",
+      "seniority": "GS-11"
+    },
+    "ground_truth": "If the conference was related to your official duties and you were authorized to attend, meals provided as part of the conference program are generally acceptable under the widely attended gathering exception. However, you should check if reporting is required based on the value and source. If the conference host has interests that could be affected by your official duties, additional considerations may apply.",
+    "expected_violations": ["Potential gift acceptance", "5 CFR 2635.204"],
+    "expected_severity": "minor",
+    "expected_actions": ["Verify conference authorization", "Check reporting requirements", "Document attendance purpose"]
+  },
+  {
+    "question": "My neighbor asked me to write a recommendation letter for their security clearance application. Can I do this?",
+    "user_context": {
+      "role": "federal_employee",
+      "agency": "DHS", 
+      "seniority": "GS-13"
+    },
+    "ground_truth": "You may provide a personal character reference for your neighbor's security clearance as long as you make it clear you are writing in your personal capacity, not as a government official. Do not use government letterhead, official email, or reference your government position in a way that suggests official endorsement. Base your recommendation only on personal knowledge, not privileged information from your government work.",
+    "expected_violations": ["Potential endorsement using public office", "5 CFR 2635.702"],
+    "expected_severity": "minor",
+    "expected_actions": ["Write in personal capacity only", "Use personal letterhead/email", "Avoid referencing official position"]
+  },
+  {
+    "question": "I discovered my agency is about to award a major contract to a company where my brother works. What should I do?",
+    "user_context": {
+      "role": "federal_employee",
+      "agency": "GSA",
+      "seniority": "GS-12"
+    },
+    "ground_truth": "You must immediately recuse yourself from any involvement in this contract matter and notify your supervisor and ethics official. Having a family member employed by a company involved in your agency's business creates a potential conflict of interest. Document your recusal and ensure you have no access to non-public information about the contract that could benefit your brother's employer.",
+    "expected_violations": ["Financial conflict of interest", "5 CFR 2635.502"],
+    "expected_severity": "serious",
+    "expected_actions": ["Immediate recusal", "Notify supervisor and ethics official", "Document conflict", "Avoid non-public information"]
+  },
+  {
+    "question": "Can I give a paid speech at a trade association event during my vacation time?",
+    "user_context": {
+      "role": "federal_employee",
+      "agency": "SEC",
+      "seniority": "GS-14"
+    },
+    "ground_truth": "You need prior approval from your agency's ethics office before accepting any paid speaking engagement. Even during vacation time, federal employees must get permission for compensated outside activities. The ethics office will review whether the speech topic relates to your official duties, whether the trade association has interests affected by your agency, and whether the compensation is appropriate. SEC employees face particularly strict restrictions on outside activities.",
+    "expected_violations": ["Outside activity without approval", "18 USC 208"],
+    "expected_severity": "serious", 
+    "expected_actions": ["Seek ethics office approval", "Do not commit until approved", "Disclose all relevant details about the event"]
+  },
+  {
+    "question": "My office is having a farewell party for a retiring colleague. Can we collect money to buy them a gift?",
+    "user_context": {
+      "role": "federal_employee",
+      "agency": "VA",
+      "seniority": "GS-10"
+    },
+    "ground_truth": "Yes, you may participate in a voluntary collection among office colleagues for a farewell gift for a retiring employee. This is allowed under the exception for gifts between employees on special occasions. Participation must be voluntary, and the gift should be of reasonable value. Ensure no pressure is placed on anyone to contribute, and keep the collection informal among office colleagues.",
+    "expected_violations": ["None - permitted activity"],
+    "expected_severity": "none",
+    "expected_actions": ["Ensure voluntary participation", "Keep gift value reasonable", "Limit to office colleagues"]
+  },
+  {
+    "question": "I was offered free tickets to a baseball game by a company that lobbies my agency. Can I accept them?",
+    "user_context": {
+      "role": "federal_employee",
+      "agency": "DOT",
+      "seniority": "GS-13"
+    },
+    "ground_truth": "No, you cannot accept free baseball tickets from a company that lobbies your agency. This company is a prohibited source because they seek official action from your agency. The tickets have monetary value exceeding the de minimis threshold and would constitute a prohibited gift. There are very limited exceptions that likely don't apply to this situation.",
+    "expected_violations": ["Gift from prohibited source", "5 CFR 2635.203"],
+    "expected_severity": "moderate",
+    "expected_actions": ["Decline the tickets", "Explain ethics rules to the company", "Report the offer if required"]
+  },
+  {
+    "question": "I want to teach an evening class at a local college about regulatory policy. Do I need permission?",
+    "user_context": {
+      "role": "federal_employee",
+      "agency": "EPA",
+      "seniority": "GS-14"
+    },
+    "ground_truth": "You need to request approval from your agency's ethics office before teaching a class about regulatory policy, especially if it's compensated. Teaching about subjects related to your official duties requires careful review to ensure you don't share non-public information or create conflicts of interest. Even if the teaching is uncompensated, approval may be required depending on the content's relationship to your work.",
+    "expected_violations": ["Outside employment without approval", "5 CFR 2635.807"],
+    "expected_severity": "moderate",
+    "expected_actions": ["Request ethics office approval", "Disclose teaching content and compensation", "Wait for approval before committing"]
+  },
+  {
+    "question": "My supervisor asked me to expedite a permit application because the applicant is a friend of theirs. What should I do?",
+    "user_context": {
+      "role": "federal_employee", 
+      "agency": "EPA",
+      "seniority": "GS-11"
+    },
+    "ground_truth": "You should not expedite the permit application based on personal relationships. All permit applications must be processed according to established procedures without preferential treatment. This request appears to be asking you to use your public office for private gain (your supervisor's friend). You should explain that applications must follow normal procedures and consider reporting this to your ethics office or appropriate authorities.",
+    "expected_violations": ["Using public office for private gain", "5 CFR 2635.702"],
+    "expected_severity": "serious",
+    "expected_actions": ["Refuse to provide preferential treatment", "Follow standard procedures", "Consider reporting to ethics office", "Document the request"]
+  }
+]

@@ -42,7 +42,8 @@ class ConfigurationLoader:
             "ai_models", 
             "vector_database",
             "data_processing",
-            "agentic_workflow"
+            "agentic_workflow",
+            "golden_dataset"
         ]
         
         for config_name in config_files:
