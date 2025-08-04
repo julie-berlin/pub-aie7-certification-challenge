@@ -1,0 +1,41 @@
+{
+  "evaluation_timestamp": "2025-08-04T10:28:42.105382",
+  "strategies_compared": [
+    "similarity",
+    "mmr",
+    "cohere_rerank"
+  ],
+  "dataset_size": 10,
+  "results": {
+    "similarity": {
+      "strategy": "similarity",
+      "dataset_size": 10,
+      "scores": {
+        "answer_relevancy": 0.6115958580676788,
+        "context_precision": 0.9999999999795,
+        "context_recall": 0.849860248447205,
+        "faithfulness": 0.5808245855806813
+      }
+    },
+    "mmr": {
+      "strategy": "mmr",
+      "dataset_size": 10,
+      "scores": {
+        "answer_relevancy": 0.5635249665457682,
+        "context_precision": 0.9805555555308704,
+        "context_recall": 0.8483709273182957,
+        "faithfulness": 0.7319476592872396
+      }
+    },
+    "cohere_rerank": {
+      "strategy": "cohere_rerank",
+      "dataset_size": 10,
+      "scores": {
+        "answer_relevancy": 0.6109879871009791,
+        "context_precision": 0.99999999998,
+        "context_recall": NaN,
+        "faithfulness": NaN
+      }
+    }
+  }
+}

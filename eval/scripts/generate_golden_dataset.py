@@ -22,7 +22,12 @@ sys.path.insert(0, str(project_root / "api"))
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_core.documents import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_qdrant import QdrantVectorStore
+from qdrant_client import QdrantClient
+from qdrant_client.models import Distance, VectorParams
 from ragas.testset import TestsetGenerator
+import tiktoken
 
 from api.app.core.logging_config import configure_logging, get_logger
 from api.app.core.settings import settings
@@ -38,7 +43,7 @@ logger = get_logger("eval.generate_golden_dataset")
 
 
 class GoldenDatasetGenerator:
-    """Generate comprehensive golden dataset using RAGAS knowledge graphs"""
+    """Generate comprehensive golden dataset using RAGAS knowledge graphs with in-memory vector store"""
     
     def __init__(self):
         # Initialize models for dataset generation using settings
@@ -57,38 +62,130 @@ class GoldenDatasetGenerator:
         self.document_loader = DocumentLoaderService()
         self.ethics_assessor = EthicsAssessmentService()
         
+        # Initialize in-memory Qdrant client
+        self.qdrant_client = QdrantClient(":memory:")
+        self.collection_name = "ethics_knowledge_temp"
+        self.vector_store = None
+        
+        # Initialize text splitter with tiktoken
+        self.encoding = tiktoken.encoding_for_model("gpt-4")
+        self.text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=settings.chunk_size,
+            chunk_overlap=settings.chunk_overlap,
+            length_function=self._tiktoken_len,
+            separators=["\n\n", "\n", " ", ""]
+        )
+        
         # Initialize TestsetGenerator
         self.testset_generator = TestsetGenerator(
             llm=self.generator_llm,
             embedding_model=self.generator_embeddings
         )
     
-    def load_ethics_documents(self) -> List[Document]:
-        """Load and return chunked ethics documents for RAGAS"""
-        logger.info("Loading federal ethics documents for knowledge graph generation")
+    def _tiktoken_len(self, text: str) -> int:
+        """Calculate text length using tiktoken"""
+        return len(self.encoding.encode(text))
+    
+    def load_and_chunk_documents(self) -> List[Document]:
+        """Load raw documents and chunk them for vector storage"""
+        logger.info("Loading and chunking federal ethics documents")
         
         try:
-            # Load original documents
-            original_documents = self.document_loader.load_ethics_documents()
+            # Load raw documents (full pages, not pre-chunked)
+            data_dir = Path(project_root) / "data"
+            documents = []
             
-            # Create new Documents with both page_content and content attributes for RAGAS
-            ragas_compatible_docs = []
-            for doc in original_documents:
-                # Create a new Document with the same content
-                new_doc = Document(
-                    page_content=doc.page_content,
-                    metadata=doc.metadata or {}
+            # Process PDF files in data directory
+            for pdf_file in data_dir.glob("*.pdf"):
+                logger.info(f"Processing {pdf_file.name}")
+                
+                # Load document content using PyMuPDF (same as DocumentLoaderService)
+                import pymupdf
+                doc = pymupdf.open(pdf_file)
+                full_text = ""
+                total_pages = len(doc)
+                
+                for page_num in range(total_pages):
+                    page = doc[page_num]
+                    full_text += page.get_text()
+                
+                doc.close()
+                
+                # Create document with metadata
+                raw_document = Document(
+                    page_content=full_text,
+                    metadata={
+                        "source": str(pdf_file),
+                        "filename": pdf_file.name,
+                        "total_pages": total_pages
+                    }
                 )
-                ragas_compatible_docs.append(new_doc)
+                documents.append(raw_document)
             
-            logger.info(f"Loaded {len(ragas_compatible_docs)} document chunks", extra={
-                "total_chunks": len(ragas_compatible_docs),
-                "sample_content_length": len(ragas_compatible_docs[0].page_content) if ragas_compatible_docs else 0
-            })
-            return ragas_compatible_docs
+            # Chunk all documents
+            logger.info(f"Chunking {len(documents)} documents")
+            all_chunks = []
+            
+            for doc in documents:
+                chunks = self.text_splitter.split_documents([doc])
+                logger.info(f"Created {len(chunks)} chunks from {doc.metadata.get('filename', 'unknown')}")
+                all_chunks.extend(chunks)
+            
+            logger.info(f"Total chunks created: {len(all_chunks)}")
+            return all_chunks
+            
         except Exception as e:
-            logger.error(f"Failed to load ethics documents: {e}")
+            logger.error(f"Failed to load and chunk documents: {e}")
             return []
+    
+    def create_vector_store(self, documents: List[Document]) -> QdrantVectorStore:
+        """Create in-memory vector store with chunked documents"""
+        logger.info(f"Creating in-memory vector store with {len(documents)} chunks")
+        
+        try:
+            # Create collection
+            self.qdrant_client.create_collection(
+                collection_name=self.collection_name,
+                vectors_config=VectorParams(
+                    size=settings.embedding_dimension,
+                    distance=Distance.COSINE
+                )
+            )
+            
+            # Create vector store
+            vector_store = QdrantVectorStore(
+                client=self.qdrant_client,
+                collection_name=self.collection_name,
+                embedding=self.generator_embeddings
+            )
+            
+            # Add documents to vector store
+            logger.info("Embedding and indexing documents...")
+            vector_store.add_documents(documents)
+            
+            logger.info(f"Vector store created with {len(documents)} indexed chunks")
+            self.vector_store = vector_store
+            return vector_store
+            
+        except Exception as e:
+            logger.error(f"Failed to create vector store: {e}")
+            raise
+    
+    def retrieve_relevant_context(self, query: str, k: int = 10) -> List[Document]:
+        """Retrieve relevant context for test generation"""
+        if not self.vector_store:
+            raise ValueError("Vector store not initialized")
+        
+        try:
+            # Use similarity search to get relevant chunks
+            relevant_docs = self.vector_store.similarity_search(query, k=k)
+            logger.debug(f"Retrieved {len(relevant_docs)} relevant chunks for query: {query[:100]}...")
+            return relevant_docs
+            
+        except Exception as e:
+            logger.error(f"Failed to retrieve context: {e}")
+            return []
+    
     
     def generate_synthetic_scenarios(self, documents: List, testset_size: int = 15) -> List[Dict[str, Any]]:
         """Generate synthetic test scenarios using RAGAS knowledge graphs"""
@@ -205,30 +302,66 @@ class GoldenDatasetGenerator:
         return str(filepath)
     
     async def generate_full_dataset(self, testset_size: int = 15) -> str:
-        """Generate complete golden dataset with knowledge graphs"""
-        logger.info("Starting full golden dataset generation process")
+        """Generate complete golden dataset with knowledge graphs using in-memory vector store"""
+        logger.info("Starting full golden dataset generation process with vector store")
         
         try:
-            # Step 1: Load ethics documents
-            documents = self.load_ethics_documents()
-            if not documents:
-                raise Exception("No documents loaded")
+            # Step 1: Load and chunk documents
+            logger.info("Step 1: Loading and chunking documents...")
+            chunked_documents = self.load_and_chunk_documents()
+            if not chunked_documents:
+                raise Exception("No documents loaded or chunked")
             
-            # Step 2: Generate synthetic scenarios using RAGAS
-            scenarios = self.generate_synthetic_scenarios(documents, testset_size)
+            # Step 2: Create in-memory vector store
+            logger.info("Step 2: Creating in-memory vector store...")
+            self.create_vector_store(chunked_documents)
+            
+            # Step 3: Use subset for RAGAS generation (for efficiency)
+            logger.info("Step 3: Preparing documents for RAGAS...")
+            doc_subset = chunked_documents[:settings.ragas_document_subset_size]
+            
+            # Step 4: Generate synthetic scenarios using RAGAS
+            logger.info("Step 4: Generating synthetic scenarios...")
+            scenarios = self.generate_synthetic_scenarios(doc_subset, testset_size)
             if not scenarios:
                 raise Exception("No scenarios generated")
             
-            # Step 3: Generate comprehensive ground truth answers
-            enhanced_dataset = await self.generate_ground_truth_answers(scenarios)
+            # Step 5: Enhance scenarios with vector store context
+            logger.info("Step 5: Enhancing scenarios with vector store context...")
+            enhanced_scenarios = []
+            for scenario in scenarios:
+                # Get additional context from vector store for each scenario
+                vector_context = self.retrieve_relevant_context(scenario["question"], k=8)
+                vector_context_text = [doc.page_content for doc in vector_context]
+                
+                # Combine original contexts with vector store context
+                combined_contexts = list(scenario.get("contexts", [])) + vector_context_text
+                # Remove duplicates while preserving order
+                seen = set()
+                unique_contexts = []
+                for ctx in combined_contexts:
+                    if ctx not in seen:
+                        seen.add(ctx)
+                        unique_contexts.append(ctx)
+                
+                enhanced_scenario = scenario.copy()
+                enhanced_scenario["contexts"] = unique_contexts[:10]  # Limit to top 10
+                enhanced_scenarios.append(enhanced_scenario)
             
-            # Step 4: Save dataset
+            # Step 6: Generate comprehensive ground truth answers
+            logger.info("Step 6: Generating ground truth answers...")
+            enhanced_dataset = await self.generate_ground_truth_answers(enhanced_scenarios)
+            
+            # Step 7: Save dataset
+            logger.info("Step 7: Saving dataset...")
             filepath = self.save_dataset(enhanced_dataset)
             
-            # Step 5: Generate summary
+            # Step 8: Generate summary
             summary = {
                 "total_scenarios": len(enhanced_dataset),
-                "document_chunks_used": len(documents),
+                "document_chunks_used": len(chunked_documents),
+                "vector_store_chunks": len(chunked_documents),
+                "ragas_subset_size": len(doc_subset),
                 "generation_timestamp": datetime.now().isoformat(),
                 "successful_generations": len([s for s in enhanced_dataset if "error" not in s]),
                 "failed_generations": len([s for s in enhanced_dataset if "error" in s])
@@ -238,6 +371,7 @@ class GoldenDatasetGenerator:
             print(f"\n🎉 Golden Dataset Generation Complete!")
             print(f"📊 Generated {summary['total_scenarios']} scenarios")
             print(f"📁 Saved to: {filepath}")
+            print(f"🗃️  Vector store: {summary['vector_store_chunks']} chunks indexed")
             print(f"✅ Successful: {summary['successful_generations']}")
             print(f"❌ Failed: {summary['failed_generations']}")
             
@@ -251,8 +385,8 @@ class GoldenDatasetGenerator:
 async def main():
     """Main execution function"""
     print("🔧 Federal Ethics Golden Dataset Generator")
-    print("Using RAGAS Knowledge Graphs + Comprehensive Ground Truth")
-    print("=" * 60)
+    print("Using In-Memory Vector Store + RAGAS Knowledge Graphs + Comprehensive Ground Truth")
+    print("=" * 80)
     
     generator = GoldenDatasetGenerator()
     

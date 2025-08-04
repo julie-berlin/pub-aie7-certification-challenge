@@ -1,6 +1,6 @@
 'use client'
 
-import { ChatMessage as ChatMessageType } from '@/types'
+import { ChatMessage as ChatMessageType, UserContext } from '@/types'
 import { cn, formatTimestamp } from '@/lib/utils'
 import { User, Bot, Download } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
@@ -9,17 +9,46 @@ import remarkGfm from 'remark-gfm'
 interface ChatMessageProps {
   message: ChatMessageType
   className?: string
+  userContext?: UserContext
+  originalQuestion?: string
 }
 
-export default function ChatMessage({ message, className }: ChatMessageProps) {
+export default function ChatMessage({ message, className, userContext, originalQuestion }: ChatMessageProps) {
   const isUser = message.role === 'user'
 
   const downloadMarkdown = () => {
-    const blob = new Blob([message.content], { type: 'text/markdown' })
+    const currentDate = new Date()
+    const formattedDate = currentDate.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    })
+    
+    let enhancedContent = `# Ethics Guidance - ${formattedDate}\n\n`
+    
+    // Add user characteristics if available
+    if (userContext) {
+      enhancedContent += `## User Information\n\n`
+      enhancedContent += `- **Role**: ${userContext.role}\n`
+      enhancedContent += `- **Agency**: ${userContext.agency}\n`
+      enhancedContent += `- **Seniority Level**: ${userContext.seniority}\n`
+      enhancedContent += `- **Security Clearance**: ${userContext.clearance}\n\n`
+    }
+    
+    // Add original question if available
+    if (originalQuestion) {
+      enhancedContent += `## Ethics Question\n\n`
+      enhancedContent += `${originalQuestion}\n\n`
+    }
+    
+    enhancedContent += `## Assessment\n\n`
+    enhancedContent += message.content
+    
+    const blob = new Blob([enhancedContent], { type: 'text/markdown' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `ethics-guidance-${new Date().toISOString().split('T')[0]}.md`
+    a.download = `ethics-guidance-${currentDate.toISOString().split('T')[0]}.md`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -39,7 +68,7 @@ export default function ChatMessage({ message, className }: ChatMessageProps) {
           'chat-bubble relative group',
           isUser ? 'chat-bubble-user' : 'chat-bubble-assistant'
         )}>
-          {!isUser && (
+          {!isUser && originalQuestion && (
             <button
               onClick={downloadMarkdown}
               className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700"

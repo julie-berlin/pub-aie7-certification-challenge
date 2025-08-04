@@ -20,7 +20,8 @@ class DocumentUploadService:
     def __init__(self):
         self.vector_store_service = VectorStoreService()
         self.document_loader_service = DocumentLoaderService()
-        self.uploads_dir = Path(settings.data_directory) / "uploads"
+        # Use tmp directory for uploads since data directory is read-only in Docker
+        self.uploads_dir = Path("/tmp/integribot_uploads")
         self.metadata_file = self.uploads_dir / "document_metadata.json"
         self._ensure_uploads_directory()
     

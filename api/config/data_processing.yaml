@@ -7,7 +7,8 @@ documents:
     - 'md'
 
 evaluation:
-  test_dataset_path: 'eval/fixtures/test_dataset_markdown.json'
+  test_dataset_path: 'eval/fixtures/golden_dataset_manual_20250804_095231.json'
+  timeout: 420
 
 text_splitting:
   strategy: 'recursive_character'

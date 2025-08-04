@@ -219,7 +219,7 @@ class WorkingRetrieverEvaluator:
 
         try:
             # Configure RAGAS with 5-minute timeout
-            run_config = RunConfig(timeout=300)  # 5 minutes
+            run_config = RunConfig(timeout=420)  # 7 minutes
 
             results = evaluate(
                 dataset=ragas_dataset,

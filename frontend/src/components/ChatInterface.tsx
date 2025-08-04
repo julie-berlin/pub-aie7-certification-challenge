@@ -35,6 +35,7 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
   const [isLoading, setIsLoading] = useState(false)
   const [streamingStatus, setStreamingStatus] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [lastUserQuestion, setLastUserQuestion] = useState<string | null>(null)
   
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -61,8 +62,9 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
     setMessages(prev => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
-    setStreamingStatus('Initializing...')
+    setStreamingStatus(null)
     setError(null)
+    setLastUserQuestion(userMessage.content)
 
     // Create a placeholder message for the assistant response
     const assistantMessageId = generateId()
@@ -148,20 +150,22 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
         {messages.map((message) => (
           <ChatMessage 
             key={message.id} 
-            message={message} 
+            message={message}
+            userContext={message.role === 'assistant' ? userContext : undefined}
+            originalQuestion={message.role === 'assistant' ? lastUserQuestion || undefined : undefined}
           />
         ))}
         
-        {isLoading && streamingStatus && (
+        {isLoading && (
           <div className="flex items-center gap-3 mb-4">
             <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
               <Bot className="w-4 h-4 text-primary-600" />
             </div>
             <div className="chat-bubble chat-bubble-assistant">
               <div className="flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span className="text-sm text-gray-600">
-                  {streamingStatus}
+                <Loader2 className="w-4 h-4 animate-spin text-primary-600" />
+                <span className="text-sm text-gray-700">
+                  {streamingStatus || "🔍 Analyzing your ethics question..."}
                 </span>
               </div>
             </div>
