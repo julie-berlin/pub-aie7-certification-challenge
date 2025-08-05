@@ -1,5 +1,6 @@
 # Certification Challenge
 
+**[Demo Video](https://www.loom.com/share/a397d8a0dc16439e8ee8781e6757a223?sid=04635da8-67fc-4885-8191-e4c4ff8facb4)**
 
 ## Problem Statement
 
@@ -205,7 +206,7 @@ python3 eval/scripts/ragas_evaluation.py
 ```
 ---
 
-## Time Tracking
+##### Time Tracking
 
 | Day     | Hours | Activities |
 |---------|-------|------------|
@@ -214,6 +215,6 @@ python3 eval/scripts/ragas_evaluation.py
 | Aug 1   | 4     | feature enhancements, synthetic data, chunking tests |
 | Aug 3   | 8     | retrievers, bug fixes |
 | Aug 4   | 7     | RAGAS evaluation, final fixes |
-| Aug 5   | 1     | record, final copy |
+| Aug 5   | 2     | record, final copy |
 
-**Total time: ~24 hours**
+**Total time: ~25 hours**
