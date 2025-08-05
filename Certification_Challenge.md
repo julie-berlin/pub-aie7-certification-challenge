@@ -1,53 +1,31 @@
 # Certification Challenge
 
-[Web Page](https://www.notion.so/Session-11-Certification-Challenge-21dcd547af3d81cbb16dedda007eb69d)
+**[Demo Video](https://www.loom.com/share/a397d8a0dc16439e8ee8781e6757a223?sid=04635da8-67fc-4885-8191-e4c4ff8facb4)**
 
-**Your Final Submission**
+## Problem Statement
 
-Please include the following in your final submission:
+Federal employees face daily ethics situations requiring guidance, but accessing relevant information from dense regulatory documents is time-intensive and error-prone. They must navigate complex federal ethics laws to understand violation severity, potential penalties, and proper reporting procedures, often without readily available expert assistance.
 
-1. A public (or otherwise shared) link to a **GitHub repo** that contains:
-    1. A 5-minute (OR LESS) loom video of a live **demo of your application** that also describes the use case.
-    2. A **written document** addressing each deliverable and answering each question
-    3. All relevant code
+### Why This is Critical for Federal Employees
 
----
+**Scale & Impact**: The 3+ million federal workforce encounters ethics questions regularly: from gift acceptance and conflicts of interest to post-employment restrictions. Even a 1% violation rate affects 30,000+ employees annually, with consequences including criminal charges, civil penalties, and career termination.
 
-## Task 1: Problem and Audience
+**Current Pain Points**:
+- **Time-Critical Decisions**: A GS-14 program manager offered a $50 contractor gift needs reliable guidance, not a week-long ethics counsel review
+- **Accessibility Gap**: Ethics officers are limited resources; employees need 24/7 access to compliance guidance
+- **Complex Navigation**: Federal ethics regulations span hundreds of pages across multiple CFR sections, making relevant rule identification difficult
+- **Privacy Barrier**: Many employees hesitate to reveal sensitive ethics dilemmas to colleagues or supervisors, choosing to stay quiet and use their best guess interpretation. A confidential chat interface allows employees to be fully honest about their situations without personal exposure.
+- **Consequences of Delay**: Uncertainty leads to either inadvertent violations (legal/career risks) or overly conservative behavior (hampering legitimate government operations)
 
-### Problem Statement
+**Real-World Urgency**: When a DOD employee receives a job offer from a defense contractor or an EPA scientist considers consulting work, they need assessment of restrictions, waiting periods, and approval requirements, not days of research through regulatory documents.
 
-What problem are you trying to solve? Why is this a problem?
-
-### Audience
-
-Who is the audience that has this problem and would use your solution? Do they nod their head up and down when you talk to them about it?
-
-**✅ Answer**
-
-1. **Problem Statement**: Federal employees and contractors struggle to quickly understand the possible ethics consequences of occasional dilemmas. They need to understand the rules around a given ethics law, severity of the situation, potential penalties, and proper reporting procedures from dense regulatory documents, leading to inadvertent violations and compliance risks.
-
-2. **Why This is a Critical Problem for Federal Employees**:
-
-The 3+ million federal workforce faces urgent compliance needs where even small percentages of ethics violations result in significant legal, financial, and reputational consequences for individuals and agencies. These users need instant scenario assessment, severity classification, and actionable guidance by transforming complex legal text into practical decision-making tools.
-
-When a GS-14 program manager receives a $50 gift from a contractor or a DOD employee considers outside employment, they need immediate guidance on violations, penalties, and reporting steps. Current approaches of manual document searches or waiting for ethics counsel create delayed decisions, inadvertent violations, or overly conservative behavior that hampers legitimate federal activities.
-
----
-
-## Task 2: Articulate your proposed solution
-
-### Solution
-
-What is your proposed solution? Why is this the best solution?
-
-**✅ Answer**
-
-### Proposed Solution
+## Solution
 
 **IntegriBot** is an agentic RAG chatbot that combines comprehensive federal ethics law knowledge with real-time web search to provide instant, actionable compliance guidance. Users interact through a clean web interface where they specify their role (GS level, agency, clearance) and describe their ethics scenario, receiving a detailed and structured analysis that includes citations of specific laws.
 
-The system delivers immediate value through multi-step agentic reasoning that analyzes context, retrieves relevant federal law using advanced MMR strategies, conducts parallel web searches for current guidance, and synthesizes comprehensive assessments. Users experience professional, government-appropriate design with streaming responses that show real-time processing steps, downloadable reports, and document upload capabilities for integrating agency-specific policies with federal regulations.
+**Key Advantages Over Generic AI Tools**: Unlike querying ChatGPT or other general-purpose AI, IntegriBot provides specialized federal ethics expertise through: (1) **Authoritative Knowledge Base** - grounded in 4 comprehensive federal ethics documents including the complete Compilation of Federal Ethics Laws, 5 CFR Part 2635 regulations, and foundational ethics principles rather than general training data, (2) **Real-time Current Information** - parallel web searches of government sources for the latest guidance and precedents, (3) **Role-specific Context** - tailored responses based on user's agency, GS level, and clearance, (4) **Structured Assessment Format** - consistent violation severity ratings, penalty explanations, and reporting procedures, and (5) **Audit Trail** - complete citations and downloadable documentation for compliance records.
+
+IntegriBot delivers immediate value through multi-step agentic reasoning that analyzes context, retrieves relevant federal law using advanced strategies, conducts parallel web searches for current guidance, and synthesizes comprehensive assessments. The system supports optional document upload to integrate agency-specific policies into the assessment, with all guidance available for viewing and downloading upon completion.
 
 ### Technical Stack
 
@@ -80,16 +58,10 @@ collect_context → create_plan → retrieve_knowledge
         combine_results → assess_violation → finalize
 ```
 
----
-
-## Task 3: Dealing with the Data
-    - Collect data for (at least) RAG and choose (at least) one external API
-
-**✅ Answer**
-
-### Data Sources and External APIs
+## Data Sources and External APIs
 
 **Primary Data Sources:**
+
 1. **Federal Ethics Law Corpus** (`/data` directory): Core regulatory documents including the 190-page "Compilation of Federal Ethics Laws (2025).pdf", 5 CFR Part 2635 regulations, and foundational ethics principles - used as the authoritative knowledge base for federal ethics rules and violations.
 
 2. **User-Uploaded Documents** (Frontend upload): Agency-specific policies, guidelines, and supplementary ethics documents uploaded through the web interface - integrated with federal law to provide customized guidance that reflects both federal requirements and organizational policies.
@@ -97,6 +69,7 @@ collect_context → create_plan → retrieve_knowledge
 3. **Tavily Web Search API**: Real-time search across government domains (osg.gov, oge.gov, ethics.gov, gsa.gov) for current precedents, recent guidance updates, and penalty information - ensures responses reflect the most current regulatory interpretations and case law.
 
 **External API Integration:**
+
 - **Tavily Search API**: Provides domain-filtered government searches with three parallel query streams (general guidance, penalty information, precedent cases) to supplement static knowledge with current regulatory developments and enforcement actions.
 
 ### Default Chunking Strategy
@@ -107,25 +80,19 @@ collect_context → create_plan → retrieve_knowledge
 
 **Evaluation Dataset**: Custom 10-scenario federal ethics test dataset covering gift acceptance, conflicts of interest, outside employment, and government resource usage with expert-validated ground truth responses. This specialized dataset enables RAGAS evaluation tailored to legal compliance accuracy rather than general RAG metrics, ensuring the system performs reliably on complex ethics scenarios federal employees actually encounter.
 
----
-
-## Task 4: Building a Quick End-to-End Agentic RAG Prototype
-    - Build an end-to-end Agentic RAG application using a production-grade stack and your choice of commercial off-the-shelf model(s)
-
-**✅ Answer**
-
-### End-to-End Agentic RAG Prototype
+## End-to-End Agentic RAG Prototype
 
 **IntegriBot** has been successfully deployed as a production-ready local application using a containerized microservices architecture. The system consists of three primary services orchestrated through Docker Compose for seamless local development and testing.
 
 ### Local Deployment Architecture
 
-**Service Components:**
+Service Components:
+
 - **FastAPI Backend** (`http://localhost:8000`): Handles agentic workflow orchestration, document processing, vector storage, and RESTful API endpoints with comprehensive logging and error handling
 - **Next.js Frontend** (`http://localhost:3000`): Responsive React interface with TypeScript, real-time streaming, document upload capabilities, and government-appropriate UI design
 - **Qdrant Vector Database** (`http://localhost:6333`): High-performance vector storage with support for similarity search, MMR retrieval, and advanced query strategies
 
-### Quick Start Commands
+Quick Start Commands:
 
 ```bash
 # Clone and start the complete system
@@ -158,14 +125,7 @@ The prototype successfully demonstrates all core requirements: multi-step agenti
 
 *Figure 1: Conceptual Diagram*
 
----
-
-## Task 5: Creating a Golden Test Data Set
-    - Generate a synthetic test data set to baseline an initial evaluation with RAGAS
-
-**✅ Answer**
-
-### RAGAS Baseline Evaluation Results
+## RAGAS Baseline Evaluation Results
 
 The Federal Ethics Chatbot was evaluated using RAGAS framework with a comprehensive test dataset of 10 federal ethics scenarios. The **baseline similarity retrieval strategy** (naive approach) was assessed across core RAG metrics to establish performance benchmarks before implementing advanced retrieval techniques.
 
@@ -192,14 +152,7 @@ The Federal Ethics Chatbot was evaluated using RAGAS framework with a comprehens
 - **Good context recall** (0.7773) shows comprehensive regulatory coverage
 - **Baseline establishes benchmark** for measuring advanced retrieval improvements
 
----
-
-## Task 6: The Benefits of Advanced Retrieval
-    - Install an advanced retriever of your choosing in our Agentic RAG application.
-
-**✅ Answer**
-
-### Advanced Retrieval Techniques
+## Advanced Retrieval Techniques
 
 1. **Maximum Marginal Relevance (MMR)**: This technique balances relevance with diversity by selecting documents that are both relevant to the query and diverse from already selected documents. MMR is particularly useful for federal ethics queries because it ensures comprehensive coverage of different aspects of complex ethics regulations rather than retrieving multiple similar documents about the same specific rule.
 
@@ -209,14 +162,7 @@ The Federal Ethics Chatbot was evaluated using RAGAS framework with a comprehens
 
 All of the above retrievers are implemented and the selected method can be chosen via configuration setting.
 
----
-
-## Task 7: Assessing Performance
-    - Assess the performance of the naive agentic RAG application versus the applications with advanced retrieval tooling
-
-**✅ Answer**
-
-### Performance Comparison Results
+## Performance Comparison Results
 
 The advanced retrieval strategies were evaluated using RAGAS framework on our federal ethics test dataset. Here are the comparative results showing significant improvements over the baseline:
 
@@ -260,7 +206,7 @@ python3 eval/scripts/ragas_evaluation.py
 ```
 ---
 
-## Time Tracking
+##### Time Tracking
 
 | Day     | Hours | Activities |
 |---------|-------|------------|
@@ -268,6 +214,7 @@ python3 eval/scripts/ragas_evaluation.py
 | July 31 | 3     | backend api, frontend, containerization, local run |
 | Aug 1   | 4     | feature enhancements, synthetic data, chunking tests |
 | Aug 3   | 8     | retrievers, bug fixes |
-| Aug 4   | 8     | RAGAS evaluation, final fixes |
+| Aug 4   | 7     | RAGAS evaluation, final fixes |
+| Aug 5   | 2     | record, final copy |
 
-**Total time: ~24 hours**
+**Total time: ~25 hours**
