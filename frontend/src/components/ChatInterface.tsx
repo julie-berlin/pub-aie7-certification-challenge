@@ -5,7 +5,7 @@ import { ChatMessage as ChatMessageType, UserContext } from '@/types'
 import { assessEthicsViolation, streamEthicsAssessment } from '@/lib/api'
 import { generateId, cn } from '@/lib/utils'
 import ChatMessage from './ChatMessage'
-import { Send, Loader2, AlertCircle, Bot } from 'lucide-react'
+import { Send, Loader2, AlertCircle } from 'lucide-react'
 
 interface ChatInterfaceProps {
   userContext: UserContext
@@ -33,7 +33,6 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
   
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [streamingStatus, setStreamingStatus] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [lastUserQuestion, setLastUserQuestion] = useState<string | null>(null)
   
@@ -62,16 +61,15 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
     setMessages(prev => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
-    setStreamingStatus(null)
     setError(null)
     setLastUserQuestion(userMessage.content)
 
-    // Create a placeholder message for the assistant response
+    // Create a placeholder message for the assistant response with loading content
     const assistantMessageId = generateId()
     const placeholderMessage: ChatMessageType = {
       id: assistantMessageId,
       role: 'assistant', 
-      content: '',
+      content: '🔍 Analyzing your ethics question...',
       timestamp: new Date(),
     }
     setMessages(prev => [...prev, placeholderMessage])
@@ -91,12 +89,16 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
         }
         
         if (chunk.message) {
-          setStreamingStatus(chunk.message)
+          // Update the placeholder message with streaming status
+          setMessages(prev => prev.map(msg => 
+            msg.id === assistantMessageId 
+              ? { ...msg, content: chunk.message || "🔍 Processing..." }
+              : msg
+          ))
         }
         
         if (chunk.status === 'complete' && chunk.response) {
           finalResponse = chunk.response
-          setStreamingStatus(null)
           
           // Update the placeholder message with final response
           setMessages(prev => prev.map(msg => 
@@ -133,7 +135,6 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
       setMessages(prev => prev.filter(msg => msg.id !== assistantMessageId))
     } finally {
       setIsLoading(false)
-      setStreamingStatus(null)
     }
   }
 
@@ -156,21 +157,6 @@ Please describe your ethics question or scenario, and I'll provide comprehensive
           />
         ))}
         
-        {isLoading && (
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex-shrink-0 w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-              <Bot className="w-4 h-4 text-primary-600" />
-            </div>
-            <div className="chat-bubble chat-bubble-assistant">
-              <div className="flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin text-primary-600" />
-                <span className="text-sm text-gray-700">
-                  {streamingStatus || "🔍 Analyzing your ethics question..."}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
         
         {error && (
           <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">

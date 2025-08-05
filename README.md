@@ -91,7 +91,7 @@ open http://localhost:3000
 
 ## 🎥 Demo
 
-A 5-minute video demonstration showcasing the complete system is available, covering:
+A [5-minute video demonstration](<TODO>) showcasing the complete system is available, covering:
 - Live ethics scenario analysis
 - Advanced retrieval strategy comparison
 - Agentic workflow processing
@@ -101,11 +101,13 @@ A 5-minute video demonstration showcasing the complete system is available, cove
 
 - **Complete Project Details**: [Certification_Challenge.md](./Certification_Challenge.md)
 - **API Documentation**: http://localhost:8000/docs (when running)
-- **Architecture Diagram**: [Diagram](./docs/IntegriBot_Diagram.drawio.png)
+- **Architecture Diagram**: [IntegriBot Diagram](./docs/IntegriBot_Diagram.drawio.png)
 - **Setup Instructions**: Follow Quick Start above or see Docker documentation
 
 ---
 
 **Target Audience**: 3+ million federal employees requiring ethics compliance guidance
+
 **Development Time**: ~24 hours over 5 days
+
 **Performance**: Production-ready with quantified improvements via RAGAS evaluation
